@@ -6,12 +6,9 @@
     <title>หน้าเว็บลงทะเบียน</title>
 
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.min.js"></script>
@@ -27,7 +24,11 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background: linear-gradient(90deg, #353535 0%, #2c2c2c 100%);
+        background: linear-gradient(
+          90deg,
+          #353535 0%,
+          #2c2c2c 100%
+        );
       }
 
       .container {
@@ -110,7 +111,7 @@
       }
 
       button:hover {
-        background-color: #6b2e39;
+        background-color: #6B2E39;
       }
 
       .right-section {
@@ -186,10 +187,10 @@
 
       <div class="right-section">
         <h2>เป็นสมาชิกแล้วใช่ไหม?</h2>
-        <p>ท่านสามารถเข้าสู่ระบบได้หากท่านทำการลงทะเบียนเป็นสมาชิกแล้ว</p>
-        <button type="button" onclick="window.location.href='index.html'">
-          Login
-        </button>
+        <p>
+          ท่านสามารถเข้าสู่ระบบได้หากท่านทำการลงทะเบียนเป็นสมาชิกแล้ว
+        </p>
+        <button type="button" onclick="window.location.href='index.html'">Login</button>
       </div>
     </div>
 
@@ -209,66 +210,59 @@
       };
 
       // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      var db = firebase.firestore();
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
 
-      document
-        .getElementById("registerForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+document
+    .getElementById("registerForm")
+    .addEventListener("submit", function (event) {
+        event.preventDefault();
 
-          var username = document.getElementById("username").value;
-          var email = document.getElementById("email").value;
-          var password = document.getElementById("password").value;
-          var role = document.getElementById("role").value;
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        var role = document.getElementById("role").value;
 
-          // ตรวจสอบว่าอีเมลนี้ถูกใช้แล้วหรือไม่
-          db.collection(role) // ใช้ค่าจาก role ในการเลือก collection
+        // ตรวจสอบว่าอีเมลนี้ถูกใช้แล้วหรือไม่
+        db.collection(role)  // ใช้ค่าจาก role ในการเลือก collection
             .where("Email", "==", email)
             .get()
             .then(function (querySnapshot) {
-              if (!querySnapshot.empty) {
-                // อีเมลซ้ำ
-                alert(
-                  "This email is already used for registration. Please use another email."
-                );
-              } else {
-                // อีเมลไม่ซ้ำ สามารถบันทึกข้อมูลได้
-                var docData = {
-                  Email: email,
-                  Password: password,
-                };
-                docData[
-                  role === "Teacher" ? "Username_teacher" : "Username_student"
-                ] = username;
+                if (!querySnapshot.empty) {
+                    // อีเมลซ้ำ
+                    alert("This email is already used for registration. Please use another email.");
+                } else {
+                    // อีเมลไม่ซ้ำ สามารถบันทึกข้อมูลได้
+                    var docData = {
+                        Email: email,
+                        Password: password,
+                    };
+                    docData[role === "Teacher" ? "Username_teacher" : "Username_student"] = username;
 
-                db.collection(role)
-                  .add(docData)
-                  .then(function (docRef) {
-                    // แสดงเอฟเฟคพลุ
-                    confetti({
-                      particleCount: 100,
-                      spread: 70,
-                      origin: { y: 0.6 },
-                    });
+                    db.collection(role)
+                        .add(docData)
+                        .then(function (docRef) {
+                            // แสดงเอฟเฟคพลุ
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 }
+                            });
 
-                    alert(
-                      "Registration completed successfully! Your ID: " +
-                        docRef.id
-                    );
-                    console.log("Document written with ID: ", docRef.id);
-                  })
-                  .catch(function (error) {
-                    console.error("Error adding document: ", error);
-                    alert("Error adding document: " + error.message);
-                  });
-              }
+                            alert("Registration completed successfully! Your ID: " + docRef.id);
+                            console.log("Document written with ID: ", docRef.id);
+                        })
+                        .catch(function (error) {
+                            console.error("Error adding document: ", error);
+                            alert("Error adding document: " + error.message);
+                        });
+                }
             })
             .catch(function (error) {
-              console.error("Error checking document: ", error);
-              alert("Error checking document: " + error.message);
+                console.error("Error checking document: ", error);
+                alert("Error checking document: " + error.message);
             });
-        });
+    });
     </script>
   </body>
 </html>
