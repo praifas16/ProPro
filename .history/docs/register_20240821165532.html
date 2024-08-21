@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>หน้าเว็บลงทะเบียน</title>
+    <style>
+      /* เริ่มต้นส่วนของ CSS */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f3;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(90deg, #2e2e2e 0%, #000000 100%, #313131 100%);
+      }
+
+      .container {
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        max-width: 900px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+      }
+
+      .left-section, .right-section {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .left-section {
+        background-color: #f3f3f3;
+        border-radius: 15px 0 0 15px;
+        text-align: center;
+      }
+
+      .left-section h2 {
+        color: #a020f0;
+        margin-bottom: 20px;
+      }
+
+      .left-section form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #a020f0;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background-color: #8b008b;
+      }
+
+      .right-section {
+        background-color: #a020f0;
+        border-radius: 0 15px 15px 0;
+        color: white;
+        text-align: center;
+      }
+
+      .right-section h2 {
+        margin-bottom: 20px;
+      }
+
+      .right-section p {
+        margin-bottom: 20px;
+      }
+
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .social-icons a {
+        width: 30px;
+        height: 30px;
+        margin: 0 10px;
+      }
+
+      .social-icons a svg {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="left-section">
+        <h2>ระบบลงชื่อเข้าใช้</h2>
+        <form id="registerForm">
+          <div class="input-group">
+            <label for="username">ชื่อผู้ใช้</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+          <div class="input-group">
+            <label for="email">อีเมล</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="input-group">
+            <label for="password">รหัสผ่าน</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button type="submit">ลงทะเบียน</button>
+        </form>
+      </div>
+
+      <div class="right-section">
+        <h2>ยังไม่ได้เป็นสมาชิก?</h2>
+        <p>
+          ท่านสามารถลงทะเบียนเพื่อเป็นสมาชิกง่ายๆ โดยการกรอกข้อมูล อีเมล
+          ชื่อผู้ใช้ และรหัสผ่านของท่าน
+        </p>
+        <button>ลงทะเบียน</button>
+      </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyC1qX4ttFX42SzVFbg6LqjNJv9rRSepYXw",
+        authDomain: "project-63a86.firebaseapp.com",
+        projectId: "team-1849c",
+        storageBucket: "project-63a86.appspot.com",
+        messagingSenderId: "448111875731",
+        appId: "1:448111875731:web:6180e0c46cc10593051f66",
+        measurementId: "G-SR4EFC2VFC",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          var username = document.getElementById("username").value;
+          var email = document.getElementById("email").value;
+          var password = document.getElementById("password").value;
+
+          // ตรวจสอบว่าอีเมลนี้ถูกใช้แล้วหรือไม่
+          db.collection("Student")
+            .where("Email", "==", email)
+            .get()
+            .then(function (querySnapshot) {
+              if (!querySnapshot.empty) {
+                // อีเมลซ้ำ
+                alert("This email is already used for registration. Please use another email.");
+              } else {
+                // อีเมลไม่ซ้ำ สามารถบันทึกข้อมูลได้
+                db.collection("Student")
+                  .add({
+                    Username: username,
+                    Email: email,
+                    Password: password,
+                    Time: firebase.firestore.FieldValue.serverTimestamp(),
+                  })
+                  .then(function (docRef) {
+                    alert("Registration completed successfully! Your ID: " + docRef.id);
+                    console.log("Document written with ID: ", docRef.id);
+                  })
+                  .catch(function (error) {
+                    console.error("Error adding document: ", error);
+                    alert("Error adding document: " + error.message);
+                  });
+              }
+            })
+            .catch(function (error) {
+              console.error("Error checking document: ", error);
+              alert("Error checking document: " + error.message);
+            });
+        });
+    </script>
+  </body>
+</html>
