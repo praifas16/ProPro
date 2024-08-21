@@ -7,7 +7,7 @@
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap" rel="stylesheet">
 
     <style>
@@ -196,44 +196,30 @@
           var email = document.getElementById("email").value;
           var password = document.getElementById("password").value;
 
-          // Function to check the collection and redirect
-          function checkCollectionAndRedirect(collection) {
-            return db
-              .collection(collection)
-              .where("Email", "==", email)
-              .get()
-              .then(function (querySnapshot) {
-                if (!querySnapshot.empty) {
-                  var userDoc = querySnapshot.docs[0]; // Consider only one result
-                  if (userDoc.data().Password === password) {
-                    // Redirect based on collection
-                    if (collection === "Teacher") {
-                      window.location.href = "teachhead.html";
-                    } else if (collection === "Student") {
-                      window.location.href = "studenthead.html";
-                    }
-                  } else {
-                    alert("Your password is incorrect.");
-                  }
-                  return true;
+          // ตรวจสอบว่าอีเมลมีอยู่ในฐานข้อมูลหรือไม่
+          db.collection("Student")
+            .where("Email", "==", email)
+            .get()
+            .then(function (querySnapshot) {
+              if (querySnapshot.empty) {
+                // หากไม่มีอีเมลในฐานข้อมูล
+                alert("This email is not registered yet.");
+              } else {
+                // มีอีเมลในฐานข้อมูล ตรวจสอบรหัสผ่าน
+                var userDoc = querySnapshot.docs[0]; // ถือว่ามีเพียง 1 ผลลัพธ์
+                if (userDoc.data().Password === password) {
+                  window.location.href = "studenthead.html"; // เปลี่ยนเส้นทางไปหน้า studenthead.html
+                } else {
+                  // รหัสผ่านไม่ถูกต้อง
+                  alert("Your password is incorrect.");
                 }
-                return false;
-              });
-          }
-
-          // Check both collections
-          checkCollectionAndRedirect("Teacher").then(function (foundInTeacher) {
-            if (!foundInTeacher) {
-              checkCollectionAndRedirect("Student").then(function (foundInStudent) {
-                if (!foundInStudent) {
-                  alert("This email is not registered yet.");
-                }
-              });
-            }
-          }).catch(function (error) {
-            console.error("Error checking document: ", error);
-            alert("Error checking document: " + error.message);
-          });
+              }
+            })
+            .catch(function (error) {
+              // ข้อผิดพลาดในการตรวจสอบ
+              console.error("Error checking document: ", error);
+              alert("Error checking document: " + error.message);
+            });
         });
     </script>
   </body>

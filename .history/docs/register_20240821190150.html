@@ -13,6 +13,9 @@
       rel="stylesheet"
     />
 
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.min.js"></script>
+
     <style>
       /* CSS Styling */
       body {
@@ -209,59 +212,58 @@
       firebase.initializeApp(firebaseConfig);
       var db = firebase.firestore();
 
-      document
-        .getElementById("registerForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-
-          var username = document.getElementById("username").value;
-          var email = document.getElementById("email").value;
-          var password = document.getElementById("password").value;
-          var role = document.getElementById("role").value;
-
-          // ตรวจสอบว่าอีเมลนี้ถูกใช้แล้วหรือไม่
-          db.collection(role) // ใช้ค่าจาก role ในการเลือก collection
+      document.getElementById("registerForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+    
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        var role = document.getElementById("role").value;
+    
+        // ตรวจสอบว่าอีเมลนี้ถูกใช้แล้วหรือไม่
+        db.collection(role) // ใช้ค่าจาก role ในการเลือก collection
             .where("Email", "==", email)
             .get()
             .then(function (querySnapshot) {
-              if (!querySnapshot.empty) {
-                // อีเมลซ้ำ
-                alert(
-                  "This email is already used for registration. Please use another email."
-                );
-              } else {
-                // อีเมลไม่ซ้ำ สามารถบันทึกข้อมูลได้
-                var docData = {
-                  Email: email,
-                  Password: password,
-                };
-                docData[
-                  role === "Teacher" ? "Username_teacher" : "Username_student"
-                ] = username;
-
-                db.collection(role)
-                  .add(docData)
-                  .then(function (docRef) {
-                    alert(
-                      "Registration completed successfully! Your ID: " +
-                        docRef.id
-                    );
-                    console.log("Document written with ID: ", docRef.id);
-
-                    // รีเซ็ตฟอร์ม
-                    document.getElementById("registerForm").reset();
-                  })
-                  .catch(function (error) {
-                    console.error("Error adding document: ", error);
-                    alert("Error adding document: " + error.message);
-                  });
-              }
+                if (!querySnapshot.empty) {
+                    // อีเมลซ้ำ
+                    alert("This email is already used for registration. Please use another email.");
+                } else {
+                    // อีเมลไม่ซ้ำ สามารถบันทึกข้อมูลได้
+                    var docData = {
+                        Email: email,
+                        Password: password,
+                    };
+                    docData[role === "Teacher" ? "Username_teacher" : "Username_student"] = username;
+    
+                    db.collection(role)
+                        .add(docData)
+                        .then(function (docRef) {
+                            // แสดงเอฟเฟคพลุ
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 },
+                            });
+    
+                            alert("Registration completed successfully! Your ID: " + docRef.id);
+                            console.log("Document written with ID: ", docRef.id);
+    
+                            // รีเซ็ตฟอร์ม
+                            document.getElementById("registerForm").reset();
+                        })
+                        .catch(function (error) {
+                            console.error("Error adding document: ", error);
+                            alert("Error adding document: " + error.message);
+                        });
+                }
             })
             .catch(function (error) {
-              console.error("Error checking document: ", error);
-              alert("Error checking document: " + error.message);
+                console.error("Error checking document: ", error);
+                alert("Error checking document: " + error.message);
             });
-        });
+    });
+    
     </script>
   </body>
 </html>

@@ -13,6 +13,9 @@
       rel="stylesheet"
     />
 
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.min.js"></script>
+
     <style>
       /* CSS Styling */
       body {
@@ -242,6 +245,13 @@
                 db.collection(role)
                   .add(docData)
                   .then(function (docRef) {
+                    // แสดงเอฟเฟคพลุ
+                    confetti({
+                      particleCount: 100,
+                      spread: 70,
+                      origin: { y: 0.6 },
+                    });
+
                     alert(
                       "Registration completed successfully! Your ID: " +
                         docRef.id
