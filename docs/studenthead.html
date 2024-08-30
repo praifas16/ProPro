@@ -484,6 +484,18 @@
       } else {
         alert("No email found in URL parameters!");
       }
+      // ดึงข้อมูลผู้ใช้งานที่ล็อกอินจาก Firebase Authentication
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          // ถ้ามีผู้ใช้งานที่ล็อกอิน ให้ดึงอีเมล
+          const email = user.email;
+          // เพิ่มพารามิเตอร์ `email` ลงใน URL โดยอัตโนมัติ
+          redirectToPageWithEmail(email);
+        } else {
+          // กรณีที่ไม่มีผู้ใช้งานที่ล็อกอิน
+          console.log("No user is signed in.");
+        }
+      });
 
       // Function to load notifications count
       function loadNotificationsCount(userEmail) {
@@ -837,6 +849,21 @@
         document.getElementById("user-email").textContent = "Guest"; // หรือข้อความอื่นๆ
         // alert("No email found in URL parameters!"); // สามารถลบหรือคอมเมนต์ข้อความนี้ออก
       }
+      // ฟังก์ชันเพื่อเพิ่มพารามิเตอร์ `email` ลงใน URL
+      function redirectToPageWithEmail(email) {
+        if (email) {
+          // สร้าง URL ใหม่พร้อมพารามิเตอร์ `email`
+          const newUrl = `${window.location.origin}${
+            window.location.pathname
+          }?email=${encodeURIComponent(email)}`;
+          // เปลี่ยนแปลง URL โดยไม่ต้องโหลดหน้าใหม่
+          window.history.pushState({ path: newUrl }, "", newUrl);
+          // เรียกฟังก์ชันอื่น ๆ ที่ต้องการทำงานหลังจากเปลี่ยนแปลง URL
+        }
+      }
+
+      // เรียกใช้งานฟังก์ชันพร้อมกับค่าอีเมลที่ต้องการ
+      redirectToPageWithEmail("example@example.com");
     </script>
   </body>
 </html>
