@@ -821,6 +821,22 @@
             });
         }
       }
+      // ตรวจสอบและแสดงอีเมลที่มุมขวาบน
+      if (email) {
+        document.getElementById("user-email").textContent = email;
+
+        // อัปเดตลิงก์ใน Sidebar ด้วยอีเมล
+        document.querySelectorAll(".menu-items a").forEach((link) => {
+          const url = new URL(link.href);
+          url.searchParams.set("email", email);
+          link.href = url.toString();
+        });
+        // เรียกฟังก์ชันเพื่อโหลดการแจ้งเตือน
+        loadNotificationsCount(email);
+      } else {
+        document.getElementById("user-email").textContent = "Guest"; // หรือข้อความอื่นๆ
+        // alert("No email found in URL parameters!"); // สามารถลบหรือคอมเมนต์ข้อความนี้ออก
+      }
     </script>
   </body>
 </html>
