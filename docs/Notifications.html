@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notifications</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <style>
+        body {
+            font-family: "Comfortaa", "Inconsolata", "Jost", "Signika", sans-serif;
+            background-color: #2f2f2f;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .topbar {
+            background-color: #2e2e2e;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0px 2px 4px rgba(177, 177, 177, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .topbar .search-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-start;
+            position: relative;
+            padding-left: 480px;
+        }
+        
+        .topbar .search-bar input {
+            width: 400px;
+            padding: 5px 10px 5px 35px;
+            border-radius: 20px;
+            border: 1px solid #717171;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .topbar .search-bar .fas {
+            position: absolute;
+            left: 490px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            z-index: 2;
+        }
+        
+        .topbar .user-section {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        #user-email {
+            color: white;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .user-icon {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .user-icon i {
+            font-size: 30px;
+            color: white;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .dropdown-menu a:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .sidebar {
+            width: 100px;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .menu-items {
+            margin-top: 40px;
+        }
+        
+        .sidebar a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .sidebar a:hover {
+            background-color: #5f5f5f;
+            border-radius: 4px;
+            width: 80%;
+            text-align: center;
+        }
+        
+        .sidebar i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .notification-container {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            margin-left: 120px;
+            background-color: #2f2f2f;
+        }
+        
+        .notification-list {
+            width: 300px;
+            padding: 20px;
+            border-right: 1px solid #444;
+            overflow-y: auto;
+        }
+        
+        .notification-details {
+            flex-grow: 1;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            background-color: #444;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-item.unread {
+            font-weight: bold;
+            background-color: #333;
+        }
+        
+        .notification-item.read {
+            font-weight: normal;
+            background-color: #555;
+        }
+        
+        .notification-item p {
+            margin: 0;
+        }
+        
+        .notification-item .timestamp {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .no-notifications {
+            text-align: center;
+            font-size: 18px;
+            color: #ccc;
+            margin-top: 20px;
+        }
+        
+        #searchResults {
+            background-color: #4d4d4d;
+            color: white;
+            position: absolute;
+            z-index: 1000;
+            width: 400px;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            top: 38px;
+        }
+        
+        #searchResults .result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #555;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        
+        #searchResults .result-item:hover {
+            background-color: #555;
+        }
+        
+        #searchResults .result-item p {
+            margin: 0;
+            color: #fff;
+        }
+        
+        #searchResults .result-item span {
+            color: #727272;
+        }
+        
+        .notification-buttons {
+            display: flex;
+            justify-content: left;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .notification-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .notification-buttons .accept {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .notification-buttons .accept:hover {
+            background-color: #45a049;
+        }
+        
+        .notification-buttons .refuse {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .notification-buttons .refuse:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="ค้นหา (Cmd+E)" id="searchInput" />
+            <div id="searchResults"></div>
+        </div>
+        <div class="user-section">
+            <div id="user-email"></div>
+            <div class="user-icon" id="userIcon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#">Profile</a>
+                <a href="#">Log out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="menu-items">
+            <a href="studenthead.html?email={{email}}"><i class="fa fa-chalkboard-teacher"></i><span>Classroom</span></a
+        >
+        <a href="Chat.html?email={{email}}"
+          ><i class="fa fa-comments"></i><span>Chat</span></a
+        >
+        <a href="Notifications.html?email={{email}}"
+          ><i class="fa fa-bell"></i><span>Notifications</span></a
+        >
+        <a href="Assignment.html?email={{email}}"
+          ><i class="fa fa-tasks"></i><span>Assignment</span></a
+        >
+        <a href="Call.html?email={{email}}"
+          ><i class="fa fa-phone"></i><span>Call</span></a
+        >
+      </div>
+    </div>
+
+    <!-- Notification Content -->
+    <div class="notification-container">
+      <div class="notification-list" id="notificationList">
+        <!-- List of notifications will be appended here -->
+      </div>
+      <div class="notification-details" id="notificationDetails">
+        <h2>รายละเอียดการแจ้งเตือน</h2>
+        <div class="no-notifications" id="noNotifications">
+          ไม่มีการแจ้งเตือน
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+      // Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyC1qX4ttFX42SzVFbg6LqjNJv9rRSepYXw",
+        authDomain: "project-63a86.firebaseapp.com",
+        projectId: "team-1849c",
+        storageBucket: "project-63a86.appspot.com",
+        messagingSenderId: "448111875731",
+        appId: "1:448111875731:web:6180e0c46cc10593051f66",
+        measurementId: "G-SR4EFC2VFC",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
+
+      // Load email from URL and set to user-email element
+      document.addEventListener("DOMContentLoaded", function () {
+        const email = new URLSearchParams(window.location.search).get("email");
+        if (email) {
+          document.getElementById("user-email").textContent = email;
+          document.querySelectorAll(".menu-items a").forEach((link) => {
+            const url = new URL(link.href);
+            url.searchParams.set("email", email);
+            link.href = url.toString();
+          });
+        }
+      });
+
+      // Function to search email or username in both Teacher and Student collections
+      document
+        .getElementById("searchInput")
+        .addEventListener("keyup", (event) => {
+          const query = event.target.value.trim().toLowerCase();
+          const searchResults = document.getElementById("searchResults");
+          searchResults.innerHTML = ""; // Clear previous results
+
+          if (query !== "") {
+            // Search in Student collection
+            searchInCollection("Student", query, searchResults);
+            // Search in Teacher collection
+            searchInCollection("Teacher", query, searchResults);
+          }
+        });
+
+      function searchInCollection(collectionName, query, searchResults) {
+        db.collection(collectionName)
+          .get()
+          .then((querySnapshot) => {
+            let found = false;
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              if (data && data.Email) {
+                // ตรวจสอบว่าอีเมลมีอยู่
+                if (data.Email.toLowerCase().startsWith(query)) {
+                  found = true;
+                  const resultItem = document.createElement("div");
+                  resultItem.classList.add("result-item");
+
+                  const name = document.createElement("p");
+                  name.textContent = data.Username
+                    ? `${data.Username}`
+                    : "No Username"; // จัดการกรณีที่ไม่มี Username
+
+                  const emailSpan = document.createElement("span");
+                  emailSpan.textContent = `${data.Email}`;
+
+                  resultItem.appendChild(name);
+                  resultItem.appendChild(emailSpan);
+
+                  searchResults.appendChild(resultItem);
+                }
+              } else {
+                console.error(
+                  `Document missing required fields in ${collectionName} collection: `,
+                  doc.id
+                );
+              }
+            });
+
+            if (!found) {
+              const noResultItem = document.createElement("div");
+              noResultItem.classList.add("result-item");
+              noResultItem.textContent = `No results found in ${collectionName}.`;
+              searchResults.appendChild(noResultItem);
+            }
+          })
+          .catch((error) => {
+            console.error(
+              `Error getting documents from ${collectionName} collection: `,
+              error
+            );
+          });
+      }
+
+      // Function to load notifications with real-time updates using onSnapshot
+      function loadNotifications() {
+        const notificationList = document.getElementById("notificationList");
+        const noNotifications = document.getElementById("noNotifications");
+
+        const email = new URLSearchParams(window.location.search).get("email");
+
+        db.collection("Notifications")
+          .where("To", "==", email)
+          .orderBy("CreatedAt", "desc")
+          .onSnapshot(
+            (snapshot) => {
+              console.log("Notifications Snapshot:", snapshot); // เพิ่มการดีบักที่นี่
+              notificationList.innerHTML = ""; // Clear existing notifications
+              if (snapshot.empty) {
+                noNotifications.style.display = "block";
+              } else {
+                noNotifications.style.display = "none";
+                snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  console.log("Notification Data:", data); // เพิ่มการดีบักที่นี่
+                  const notificationItem = document.createElement("div");
+                  notificationItem.classList.add("notification-item");
+                  notificationItem.classList.add(
+                    data.isRead ? "read" : "unread"
+                  );
+                  notificationItem.setAttribute("data-id", doc.id);
+
+                  const message = document.createElement("p");
+                  message.textContent = data.Message;
+
+                  const timestamp = document.createElement("span");
+                  timestamp.classList.add("timestamp");
+                  timestamp.textContent = new Date(
+                    data.CreatedAt.seconds * 1000
+                  ).toLocaleString("th-TH");
+
+                  notificationItem.appendChild(message);
+                  notificationItem.appendChild(timestamp);
+
+                  notificationItem.addEventListener("click", function () {
+                    showNotificationDetails(data, doc.id);
+                  });
+
+                  notificationList.appendChild(notificationItem);
+                });
+              }
+            },
+            (error) => {
+              console.error("Error loading notifications: ", error);
+            }
+          );
+      }
+
+      function handleJoinRequest(notificationId, isAccepted) {
+        db.collection("Notifications")
+          .doc(notificationId)
+          .get()
+          .then((doc) => {
+            const data = doc.data();
+            if (!data || !data.JoinRequestId) {
+              console.error(
+                "Invalid notification data or missing JoinRequestId."
+              );
+              alert("Error: Invalid notification data.");
+              return;
+            }
+
+            const joinRequestId = data.JoinRequestId;
+
+            db.collection("JoinRequests")
+              .doc(joinRequestId)
+              .get()
+              .then((joinDoc) => {
+                if (!joinDoc.exists) {
+                  console.error(
+                    "Join request document does not exist:",
+                    joinRequestId
+                  );
+                  alert("Error: The join request does not exist.");
+                  return;
+                }
+
+                const requesterEmail = joinDoc.data().RequesterEmail;
+                const ownerEmail = data.To;
+
+                // Update the JoinRequests collection based on the user's choice
+                db.collection("JoinRequests")
+                  .doc(joinRequestId)
+                  .update({
+                    Status: isAccepted ? "Accepted" : "Refused",
+                  })
+                  .then(() => {
+                    if (isAccepted) {
+                      // ถ้ายอมรับ เพิ่มผู้ใช้ในห้องเรียน
+                      db.collection("Subjects")
+                        .doc(joinDoc.data().SubjectID)
+                        .update({
+                          Members:
+                            firebase.firestore.FieldValue.arrayUnion(
+                              requesterEmail
+                            ),
+                        })
+                        .then(() => {
+                          // ตรวจสอบการแจ้งเตือนที่ซ้ำกันก่อนเพิ่ม
+                          db.collection("Notifications")
+                            .where("To", "==", requesterEmail)
+                            .where("Type", "==", "Info")
+                            .where(
+                              "Message",
+                              "==",
+                              `ยินดีด้วย!!คุณได้รับอนุญาตให้เข้าร่วมห้องเรียนแล้วจาก ${ownerEmail} 🎊🎉🎀`
+                            )
+                            .get()
+                            .then((querySnapshot) => {
+                              if (querySnapshot.empty) {
+                                db.collection("Notifications")
+                                  .add({
+                                    To: requesterEmail,
+                                    Message: `ได้รับอนุญาตจาก ${ownerEmail} 🎊🎉🎀`,
+                                    CreatedAt:
+                                      firebase.firestore.FieldValue.serverTimestamp(),
+                                    Type: "Info",
+                                    isRead: false,
+                                  })
+                                  .then(() => {
+                                    alert(
+                                      "Join request accepted and the user has been added to the classroom."
+                                    );
+                                    document.getElementById(
+                                      "notificationDetails"
+                                    ).innerHTML += `
+                                      <p>คุณได้อนุญาตให้ ${requesterEmail} เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</p>
+                                    `;
+                                    const buttonsContainer =
+                                      document.querySelector(
+                                        ".notification-buttons"
+                                      );
+                                    if (buttonsContainer) {
+                                      buttonsContainer.style.display = "none";
+                                    }
+                                  })
+                                  .catch((error) => {
+                                    console.error(
+                                      "Error adding notification to requester: ",
+                                      error
+                                    );
+                                    alert(
+                                      "An error occurred while notifying the requester. Please try again."
+                                    );
+                                  });
+                              } else {
+                                console.log(
+                                  "Notification already exists for this action."
+                                );
+                              }
+                            })
+                            .catch((error) => {
+                              console.error(
+                                "Error checking existing notification: ",
+                                error
+                              );
+                            });
+                        })
+                        .catch((error) => {
+                          console.error(
+                            "Error adding user to classroom: ",
+                            error
+                          );
+                          alert(
+                            "An error occurred while adding the user to the classroom. Please check the console for details."
+                          );
+                        });
+                    } else {
+                      // กรณีปฏิเสธ
+                      db.collection("Notifications")
+                        .add({
+                          To: requesterEmail,
+                          Message: `คุณถูกปฏิเสธจาก ${ownerEmail} !!🥺😔`,
+                          CreatedAt:
+                            firebase.firestore.FieldValue.serverTimestamp(),
+                          Type: "Info",
+                          isRead: false,
+                        })
+                        .then(() => {
+                          alert(
+                            "Join request refused and notification sent to the requester."
+                          );
+                        })
+                        .catch((error) => {
+                          console.error(
+                            "Error adding refusal notification: ",
+                            error
+                          );
+                          alert(
+                            "An error occurred while notifying the requester. Please try again."
+                          );
+                        });
+                    }
+
+                    // ทำเครื่องหมายว่าแจ้งเตือนนี้ได้อ่านแล้ว
+                    db.collection("Notifications")
+                      .doc(notificationId)
+                      .update({
+                        isRead: true,
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Error marking notification as read: ",
+                          error
+                        );
+                      });
+                  })
+                  .catch((error) => {
+                    console.error("Error updating join request: ", error);
+                    alert(
+                      "An error occurred while processing the request. Please check the console for details."
+                    );
+                  });
+              })
+              .catch((error) => {
+                console.error("Error fetching join request document: ", error);
+                alert("Error: Unable to fetch the join request document.");
+              });
+          })
+          .catch((error) => {
+            console.error("Error fetching notification: ", error);
+          });
+      }
+
+      // Load notifications when the page loads
+      window.onload = loadNotifications;
+
+      function showNotificationDetails(data, docId) {
+        const notificationDetails = document.getElementById(
+          "notificationDetails"
+        );
+
+        if (data && data.Message) {
+          notificationDetails.innerHTML = `
+                <h2>${data.Message}</h2>
+                <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
+                  "th-TH"
+                )}</p>
+            `;
+        } else {
+          notificationDetails.innerHTML = `
+                <h2>ไม่มีข้อความที่จะแสดง</h2>
+            `;
+        }
+
+        if (data.Type === "JoinRequest" && data.JoinRequestId) {
+          db.collection("JoinRequests")
+            .doc(data.JoinRequestId)
+            .get()
+            .then((joinDoc) => {
+              if (joinDoc.exists) {
+                const joinData = joinDoc.data();
+                const status = joinData.Status;
+
+                if (status === "Pending") {
+                  notificationDetails.innerHTML = `
+                                <h2>${data.Message}</h2>
+                                <p>${new Date(
+                                  data.CreatedAt.seconds * 1000
+                                ).toLocaleString("th-TH")}</p>
+                                <p>มีการขอเข้าร่วมห้องเรียนจาก ${
+                                  joinData.RequesterEmail
+                                } โปรดพิจารณา !! 😊</p>
+                            `;
+
+                  // เพิ่มปุ่ม Accept และ Refuse
+                  const buttonsContainer = document.createElement("div");
+                  buttonsContainer.classList.add("notification-buttons");
+
+                  const acceptButton = document.createElement("button");
+                  acceptButton.classList.add("accept");
+                  acceptButton.textContent = "Accept";
+                  acceptButton.onclick = function () {
+                    handleJoinRequest(docId, true);
+                    buttonsContainer.style.display = "none";
+                  };
+
+                  const refuseButton = document.createElement("button");
+                  refuseButton.classList.add("refuse");
+                  refuseButton.textContent = "Refuse";
+                  refuseButton.onclick = function () {
+                    handleJoinRequest(docId, false);
+                    buttonsContainer.style.display = "none";
+                  };
+
+                  buttonsContainer.appendChild(acceptButton);
+                  buttonsContainer.appendChild(refuseButton);
+                  notificationDetails.appendChild(buttonsContainer);
+                } else if (status === "Accepted") {
+                  notificationDetails.innerHTML = `
+                                <h2>คุณได้อนุญาตให้ ${
+                                  joinData.RequesterEmail
+                                } เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</h2>
+                                <p>${new Date(
+                                  data.CreatedAt.seconds * 1000
+                                ).toLocaleString("th-TH")}</p>
+                            `;
+                } else if (status === "Refused") {
+                  notificationDetails.innerHTML = `
+                                <h2>คุณได้ปฏิเสธ ${
+                                  joinData.RequesterEmail
+                                } ในการขอเข้าร่วมห้องเรียน!! 😔</h2>
+                                <p>${new Date(
+                                  data.CreatedAt.seconds * 1000
+                                ).toLocaleString("th-TH")}</p>
+                            `;
+                }
+              } else {
+                console.error(
+                  "JoinRequest not found with ID:",
+                  data.JoinRequestId
+                );
+                notificationDetails.innerHTML = `
+                            <h2>ไม่พบข้อมูลการขอเข้าร่วมห้องเรียน</h2>
+                        `;
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching JoinRequest:", error);
+              notificationDetails.innerHTML = `
+                        <h2>เกิดข้อผิดพลาดในการดึงข้อมูลการขอเข้าร่วมห้องเรียน</h2>
+                    `;
+            });
+        } else {
+          notificationDetails.innerHTML = `
+                <h2>${data.Message}</h2>
+                <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
+                  "th-TH"
+                )}</p>
+            `;
+        }
+
+        // Mark notification as read
+        db.collection("Notifications")
+          .doc(docId)
+          .update({
+            isRead: true,
+          })
+          .then(() => {
+            const notificationItem = document.querySelector(
+              `.notification-item[data-id='${docId}']`
+            );
+            if (notificationItem) {
+              notificationItem.classList.remove("unread");
+              notificationItem.classList.add("read");
+            }
+          })
+          .catch((error) => {
+            console.error("Error marking notification as read: ", error);
+          });
+      }
+
+      // Load notifications when the page loads
+      window.onload = loadNotifications;
+
+      // Toggle dropdown menu
+      const userIcon = document.getElementById("userIcon");
+      const dropdownMenu = document.getElementById("dropdownMenu");
+
+      userIcon.addEventListener("click", () => {
+        dropdownMenu.style.display =
+          dropdownMenu.style.display === "none" ||
+          dropdownMenu.style.display === ""
+            ? "block"
+            : "none";
+      });
+
+      // Close dropdown if clicked outside
+      window.addEventListener("click", function (e) {
+        if (!userIcon.contains(e.target)) {
+          dropdownMenu.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
