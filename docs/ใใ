@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom General</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Comfortaa", "Inconsolata", "Jost", "Signika", sans-serif;
+            background-color: #2f2f2f;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        
+        .topbar {
+    background-color: #2e2e2e;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed; /* ใช้ fixed เพื่อไม่ให้เลื่อน */
+    top: 0; /* ให้อยู่ที่ด้านบนสุด */
+    width: 100%; /* ให้ครอบคลุมเต็มความกว้าง */
+    z-index: 999; /* ให้แน่ใจว่าอยู่เหนือองค์ประกอบอื่นๆ */
+    box-sizing: border-box; /* เพื่อให้ padding และ border รวมอยู่ในขนาดขององค์ประกอบ */
+}
+
+.topbar .search-bar {
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+    padding-left: 480px;
+}
+
+.topbar .search-bar input {
+    width: 400px;
+    padding: 5px 10px 5px 35px;
+    border-radius: 20px;
+    border: 1px solid #717171;
+    background-color: #333;
+    color: #979797;
+    font-size: 16px;
+    z-index: 1;
+}
+
+.topbar .search-bar .fas {
+    position: absolute;
+    left: 490px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #979797;
+    z-index: 2;
+}
+
+.topbar .user-section {
+    display: flex;
+    align-items: center;
+}
+
+#user-email {
+    color: white;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.user-icon {
+    cursor: pointer;
+}
+
+.user-icon i {
+    font-size: 30px;
+    color: white;
+}
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .dropdown-menu a:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .sidebar {
+            width: 100px;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .menu-items {
+            margin-top: 40px;
+        }
+        
+        .sidebar a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .sidebar a:hover {
+            background-color: #5f5f5f;
+            border-radius: 4px;
+            width: 80%;
+            text-align: center;
+        }
+        
+        .sidebar i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .main-sidebar {
+            width: 180px;
+            background-color: #333;
+            padding: 10px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            margin-left: 100px;
+            position: fixed;
+            top: 40px;
+            bottom: 0;
+        }
+        
+        .main-sidebar a {
+            display: flex;
+            align-items: center;
+            color: #ccc;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .main-sidebar a i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .main-sidebar a:hover {
+            background-color: #444;
+            color: #fff;
+        }
+        
+        .main-sidebar a.active {
+            background-color: #9c0909;
+            color: #b51d1d;
+        }
+        
+        .main-sidebar .main-channel {
+            margin-top: 15px;
+        }
+        
+        .main-sidebar .main-channel a {
+            padding-left: 20px;
+            font-size: 12px;
+        }
+        
+        .course-name {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #fff;
+            background-color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .course-name i {
+            margin-right: 10px;
+        }
+        label[for="documentId"] {
+    color: white; /* กำหนดสีของข้อความให้เป็นสีขาว */
+    font-size: 14px; /* สามารถปรับขนาดฟอนต์ได้ตามต้องการ */
+}
+        #documentId {
+    width: 130px; /* กำหนดความกว้างที่ต้องการ */
+    padding: 5px; /* เพิ่ม padding เพื่อให้มีพื้นที่รอบๆ ข้อความ */
+    border-radius: 5px; /* ทำมุมโค้งมน */
+    border: 1px solid #717171; /* ขอบเส้นบางๆ สีเทา */
+    background-color: #333; /* สีพื้นหลัง */
+    color: white; /* สีตัวอักษร */
+    font-size: 12px; /* ขนาดฟอนต์ */
+    text-align: center; /* จัดให้อยู่ตรงกลาง */
+}
+        
+        #searchResults {
+            background-color: rgb(86, 86, 86);
+            color: black;
+            position: absolute;
+            z-index: 1000;
+            width: 400px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            top: 38px;
+        }
+        
+        #searchResults .result-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #a3a3a3;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+        }
+        
+        #searchResults .result-item:hover {
+            background-color: #989898;
+        }
+        
+        .search-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-info span {
+            font-size: 14px;
+            color: #b2b2b2;
+        }
+        
+        .search-info p {
+            margin: 0;
+            font-size: 16px;
+            color: #b2b2b2;
+        }
+        
+        .content {
+            flex-grow: 1;
+            background-color: #2c2c2c;
+            display: flex;
+            flex-direction: column;
+            margin-left: 280px;
+            padding-top: 0px;
+        }
+        
+        .content-header {
+    background-color: #202020;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    font-family: "Comfortaa", Arial, sans-serif;
+    color: white;
+    position: fixed;
+    top: 50px;
+    left:60%; /* ใช้ 50% เพื่อให้ขยับไปด้านขวา */
+    transform: translateX(-50%); /* เลื่อนส่วนนี้กลับมาที่กึ่งกลาง */
+    width: 78%; /* กำหนดความกว้างเป็น 80% ของหน้าจอ */
+    z-index: 999;
+}
+
+.content-header h2 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.content-header .header-options {
+    display: flex;
+    align-items: center;
+}
+
+.content-header .header-options a {
+    margin-right: 15px;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.content-header .header-options a:hover {
+    color: #fff;
+}
+
+        
+        .content-body {
+            padding: 20px;
+            margin-top: 100px;
+            overflow-y: auto;
+        }
+        
+        .post {
+            background-color: #3b3b3b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-family: "Comfortaa", Arial, sans-serif;
+        }
+        
+        .post-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .post-header .post-date {
+            font-size: 12px;
+            color: #bbb;
+        }
+        
+        .post-content {
+            font-size: 14px;
+            color: #ddd;
+        }
+        .post-content img {
+            width: 300px; /* กำหนดความกว้างคงที่ */
+            height: auto; /* ให้รักษาอัตราส่วนเดิม */
+            border-radius: 10px;
+        }
+
+        
+        .reply-section {
+            margin-top: 10px;
+            border-top: 1px solid #444;
+            padding-top: 10px;
+        }
+        
+        .reply {
+            background-color: #2c2c2c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .reply p {
+            margin: 0;
+            font-size: 14px;
+            color: #bbb;
+        }
+        
+        .reply .reply-author {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .start-post {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .start-post button {
+            background-color: #2e3956;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .start-post button:hover {
+            background-color: #6b2e39;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%; /* ปรับขนาดความกว้างเป็นเปอร์เซ็นต์ของหน้าจอ */
+            max-width: 350px; /* กำหนดความกว้างสูงสุด */
+            color: black;
+            margin: auto; /* จัดให้อยู่กึ่งกลาง */
+        }
+
+        .modal-content textarea {
+            width: 92%; /* ขยายเต็มความกว้าง */
+            height: 100px; /* ปรับความสูง */
+            margin-bottom: 15px; /* เพิ่มระยะห่างด้านล่าง */
+            padding: 15px; /* เพิ่ม padding เพื่อให้มีพื้นที่รอบๆ ตัวอักษร */
+            border-radius: 10px; /* ทำมุมโค้งมน */
+            border: 1px solid #ccc; /* ขอบสีเทา */
+            background-color: #f9f9f9; /* สีพื้นหลังอ่อน */
+            font-size: 14px; /* ขนาดฟอนต์ */
+            font-family: 'Comfortaa', sans-serif; /* ใช้ฟอนต์สวยๆ */
+            color: #333; /* สีตัวอักษร */
+            resize: none; /* ปิดการขยาย */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* เงา */
+            transition: border-color 0.3s, box-shadow 0.3s; /* เพิ่ม transition เพื่อทำให้การเปลี่ยนขอบมีความลื่นไหล */
+        }
+        
+        .modal-content .attachments {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .modal-content .attachments i {
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+        }
+        
+        .modal-content .attachments i:hover {
+            color: #555;
+        }
+        
+        .modal-content button {
+            background-color: #2e3956;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+                
+        .modal-content button:hover {
+            background-color: #6b2e39;
+        }
+        .attachments {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-top: 10px;
+        }
+
+        .attachments i {
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .attachments i:hover {
+            color: #6b2e39;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        #fileContainer {
+            padding: 10px;
+            border: 1px dashed #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            color: #333;
+            margin-top: 10px;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+        
+        #fileContainer a {
+            color: #4caf50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        #fileContainer a:hover {
+            text-decoration: underline;
+        }
+        
+        .file-link {
+        background-color: #403f3f;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 8px;
+        display: inline-block; /* ปรับให้เป็น inline-block เพื่อให้ขนาดไม่เกินพอดี */
+        max-width: 80%; /* จำกัดความกว้างสูงสุด */
+        text-align: center; /* จัดข้อความให้อยู่กลาง */
+        margin-top: 10px; /* เพิ่มช่องว่างระหว่างไฟล์ที่แนบกับองค์ประกอบอื่น */
+    }
+
+    .file-link:hover {
+        background-color: #6b2e39;
+    }
+
+        .youtube-iframe {
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .external-link {
+            color: #f7f7f7;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px;
+            display: inline-block;
+        }
+        
+        .external-link:hover {
+            background-color: #6b2e39;
+            border-radius: 8px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            background-color: rgb(255, 157, 0);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 5px;
+            font-size: 12px;
+            display: none;
+        }
+        .comment-section {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            margin-top: 0;
+            gap: 10px;
+        }
+
+        .comment-input {
+            flex-grow: 1;
+            padding: 8px;
+            background-color: #3b3b3b;
+            border: 1px solid #666;
+            border-radius: 8px;
+            color: #ddd;
+        }
+
+        .comment-button {
+            padding: 8px 16px;
+            background-color: #6b2e39;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .comment-button:hover {
+            background-color: #b53f51;
+        }
+
+        .attachment-icons {
+            display: flex;
+            gap: 10px;
+            margin-left: 10px;
+        }
+
+        .attachment-icons i {
+            cursor: pointer;
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        .attachment-icons i:hover {
+            color: #fff;
+        }
+
+        .file-preview {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .file-preview p {
+            margin: 0;
+            flex-grow: 1;
+            padding-right: 10px;
+        }
+
+        .file-preview button {
+            background-color: #ff4c4c;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .file-preview button:hover {
+            background-color: #ff1a1a;
+        }
+    </style>
+</head>
+
+
+
+
+
+async function submitComment(postId, commentText) {
+    if (commentText === "" && attachedCommentFileURL === "") {
+        alert("Message or attachment is required.");
+        return;
+    }
+
+    const commentData = {
+        PostId: postId, // ระบุ postID
+        Username: window.username,
+        Email: window.email,
+        CommentText: commentText,
+        Timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        FileType: attachedCommentFileType,
+        FileURL: attachedCommentFileURL
+    };
+
+    try {
+        // บันทึกคอมเม้นต์ลง Firestore
+        await db.collection("Comments").add(commentData);
+        alert("Comment submitted successfully!");
+        attachedCommentFileURL = "";
+        attachedCommentFileType = "";
+                document.querySelector('.comment-input').value = "";
+        document.getElementById('commentImageContainer').innerHTML = "";
+
+        // สร้างการแจ้งเตือนให้สมาชิกในห้องเรียนทุกคน
+        const subjectDoc = await db.collection("Subjects").doc(classroomName).get();
+        const subjectData = subjectDoc.data();
+
+        if (subjectData && subjectData.Members) {
+            const members = subjectData.Members;
+
+            for (const memberEmail of members) {
+                if (memberEmail !== window.email) { // ไม่แจ้งเตือนตัวเอง
+                    await db.collection("Notifications").add({
+                        To: memberEmail,
+                        Message: `${window.username} ได้คอมเม้นต์ในโพสต์ในห้องเรียน ${classroomName}`,
+                        Type: "Comment",
+                        ClassroomName: classroomName,
+                        PostId: postId,
+                        CreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        isRead: false,
+                    });
+                }
+            }
+        }
+
+        alert("Comment submitted successfully and notifications sent!");
+        attachedCommentFileURL = ""; // ล้างข้อมูลไฟล์หลังส่งคอมเม้นต์สำเร็จ
+        attachedCommentFileType = "";
+        document.querySelector('.comment-input').value = "";
+        document.getElementById('commentImageContainer').innerHTML = "";
+        document.getElementById('commentFileContainer').style.display = 'none';
+
+        // รีเฟรชหน้าเว็บหลังจากกดตกลงใน alert
+        setTimeout(() => {
+            location.reload();
+        }, 300);
+
+    } catch (error) {
+        console.error("Error submitting comment or sending notifications: ", error);
+    }
+}
