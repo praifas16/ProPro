@@ -1,3 +1,10 @@
 {
     "terminal.integrated.sendKeybindingsToShell": true
-}
+}{
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+  }
+  

@@ -323,7 +323,7 @@
     </style>
   </head>
 
-<body>
+  <body>
     <div class="topbar">
       <div class="search-bar">
         <i class="fas fa-search"></i>
@@ -373,12 +373,23 @@
         <div class="no-notifications" id="noNotifications">
           ไม่มีการแจ้งเตือน
         </div>
-        <div class="notification-image-container" id="notificationImageContainer">
-          <img id="notificationImage" src="" alt="รูปภาพการแจ้งเตือน" style="display: none; max-width: 100%;">
+        <div
+          class="notification-image-container"
+          id="notificationImageContainer"
+        >
+          <!-- แสดงภาพเมื่อมีการเรียก -->
+          <img
+            id="notificationImage"
+            src=""
+            alt="รูปภาพการแจ้งเตือน"
+            style="display: none; max-width: 100%"
+          />
         </div>
-        
+        <!-- ปิด div ของ notification-image-container -->
+      </div>
+      <!-- ปิด div ของ notification-details -->
     </div>
-    
+    <!-- ปิด div ของ notification-container -->
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -401,18 +412,6 @@
       var db = firebase.firestore();
 
       // Load email from URL and set to user-email element
-      document.addEventListener("DOMContentLoaded", function() {
-        loadNotifications(); 
-        const email = new URLSearchParams(window.location.search).get("email");
-        if (email) {
-          document.getElementById("user-email").textContent = email;
-          document.querySelectorAll(".menu-items a").forEach((link) => {
-            const url = new URL(link.href);
-            url.searchParams.set("email", email);
-            link.href = url.toString();
-          });
-        }
-      });
 
       // Function to search email or username in both Teacher and Student collections
       document
@@ -480,83 +479,89 @@
           });
       }
 
+      function loadNotifications() {
+        const notificationList = document.getElementById("notificationList");
+        const noNotifications = document.getElementById("noNotifications");
 
-function loadNotifications() {
-    const notificationList = document.getElementById("notificationList");
-    const noNotifications = document.getElementById("noNotifications");
+        const email = new URLSearchParams(window.location.search).get("email");
 
-    const email = new URLSearchParams(window.location.search).get("email");
-
-    db.collection("Notifications")
-        .where("To", "==", email)
-        .orderBy("CreatedAt", "desc")
-        .onSnapshot(
+        db.collection("Notifications")
+          .where("To", "==", email)
+          .orderBy("CreatedAt", "desc")
+          .onSnapshot(
             (snapshot) => {
-                notificationList.innerHTML = ""; // ล้างรายการแจ้งเตือนเดิม
-                if (snapshot.empty) {
-                    noNotifications.style.display = "block";
-                } else {
-                    noNotifications.style.display = "none";
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const notificationItem = document.createElement("div");
-                        notificationItem.classList.add("notification-item");
-                        notificationItem.classList.add(
-                            data.isRead ? "read" : "unread"
-                        );
-                        notificationItem.setAttribute("data-id", doc.id);
+              notificationList.innerHTML = ""; // ล้างรายการแจ้งเตือนเดิม
+              if (snapshot.empty) {
+                noNotifications.style.display = "block";
+              } else {
+                noNotifications.style.display = "none";
+                snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  const notificationItem = document.createElement("div");
+                  notificationItem.classList.add("notification-item");
+                  notificationItem.classList.add(
+                    data.isRead ? "read" : "unread"
+                  );
+                  notificationItem.setAttribute("data-id", doc.id);
 
-                        const message = document.createElement("p");
-                        message.textContent = data.Message;
+                  const message = document.createElement("p");
+                  message.textContent = data.Message;
 
-                        const timestamp = document.createElement("span");
-                        timestamp.classList.add("timestamp");
-                        timestamp.textContent = new Date(
-                            data.CreatedAt.seconds * 1000
-                        ).toLocaleString("th-TH");
+                  const timestamp = document.createElement("span");
+                  timestamp.classList.add("timestamp");
+                  timestamp.textContent = new Date(
+                    data.CreatedAt.seconds * 1000
+                  ).toLocaleString("th-TH");
 
-                        notificationItem.appendChild(message);
-                        notificationItem.appendChild(timestamp);
+                  notificationItem.appendChild(message);
+                  notificationItem.appendChild(timestamp);
 
-                        // ตรวจสอบว่ามี PostID หรือไม่
-                        if (data.PostID) {
-                            // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ PostID
-                            db.collection("Post").doc(data.PostID).get().then((postDoc) => {
-                          if (postDoc.exists) {
-                              const postData = postDoc.data();
-                              console.log("Post data:", postData);  // ตรวจสอบข้อมูลที่ได้จาก Firebase
-                              if (postData.PostType === "รูปภาพ" && postData.Content) {
-                                  const img = document.createElement("img");
-                                  img.src = postData.Content; // URL รูปภาพที่โพสต์
-                                  img.style.maxWidth = "50px";
-                                  img.style.borderRadius = "5px";
-                                  img.style.marginLeft = "15px";
-                                  notificationItem.appendChild(img); // แทรกรูปภาพทางขวาของข้อความ
-                              }
-                          } else {
-                              console.error("Post not found for PostID:", data.PostID);
+                  // ตรวจสอบว่ามี PostID หรือไม่
+                  if (data.PostID) {
+                    // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ PostID
+                    db.collection("Post")
+                      .doc(data.PostID)
+                      .get()
+                      .then((postDoc) => {
+                        if (postDoc.exists) {
+                          const postData = postDoc.data();
+                          console.log("Post data:", postData); // ตรวจสอบข้อมูลที่ได้จาก Firebase
+                          if (
+                            postData.PostType === "รูปภาพ" &&
+                            postData.Content
+                          ) {
+                            const img = document.createElement("img");
+                            img.src = postData.Content; // URL รูปภาพที่โพสต์
+                            img.style.maxWidth = "50px";
+                            img.style.borderRadius = "5px";
+                            img.style.marginLeft = "15px";
+                            notificationItem.appendChild(img); // แทรกรูปภาพทางขวาของข้อความ
                           }
-                      }).catch((error) => {
-                          console.error("Error fetching post:", error);
-                      });
-
+                        } else {
+                          console.error(
+                            "Post not found for PostID:",
+                            data.PostID
+                          );
                         }
+                      })
+                      .catch((error) => {
+                        console.error("Error fetching post:", error);
+                      });
+                  }
 
-                        notificationItem.addEventListener("click", function () {
-                            showNotificationDetails(data, doc.id);
-                        });
+                  notificationItem.addEventListener("click", function () {
+                    showNotificationDetails(data, doc.id);
+                  });
 
-                        notificationList.appendChild(notificationItem);
-                    });
-                }
+                  notificationList.appendChild(notificationItem);
+                });
+              }
             },
             (error) => {
-                console.error("Error loading notifications: ", error);
+              console.error("Error loading notifications: ", error);
             }
-        );
-}
-
-
+          );
+      }
 
       function handleJoinRequest(notificationId, isAccepted) {
         db.collection("Notifications")
@@ -734,135 +739,187 @@ function loadNotifications() {
           });
       }
 
-      // Load notifications when the page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        loadNotifications();
+
+        const email = new URLSearchParams(window.location.search).get("email");
+        if (email) {
+          document.getElementById("user-email").textContent = email;
+          document.querySelectorAll(".menu-items a").forEach((link) => {
+            const url = new URL(link.href);
+            url.searchParams.set("email", email);
+            link.href = url.toString();
+          });
+        }
+
+        // รอการโหลด DOM ให้เสร็จสมบูรณ์ก่อนตรวจสอบการมีอยู่ของ notificationImageContainer
+        setTimeout(() => {
+          const notificationImageContainer = document.getElementById(
+            "notificationImageContainer"
+          );
+          if (notificationImageContainer) {
+            console.log(
+              "Element 'notificationImageContainer' is found in DOM."
+            );
+          } else {
+            console.error(
+              "Element 'notificationImageContainer' not found in DOM."
+            );
+          }
+        }, 2000); // หน่วงเวลา 1000 มิลลิวินาที
+      });
+
       window.onload = loadNotifications;
       function showNotificationDetails(data, docId) {
-    const notificationDetails = document.getElementById("notificationDetails");
+        const notificationDetails = document.getElementById(
+          "notificationDetails"
+        );
+        const notificationImageContainer = document.getElementById(
+          "notificationImageContainer"
+        );
 
-    if (notificationDetails) {
-        // แสดงข้อความการแจ้งเตือน
-        if (data && data.Message) {
+        if (notificationDetails) {
+          // แสดงข้อความการแจ้งเตือน
+          if (data && data.Message) {
             notificationDetails.innerHTML = `
                 <h2>${data.Message}</h2>
-                <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString("th-TH")}</p>
+                <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
+                  "th-TH"
+                )}</p>
             `;
-        } else {
+          } else {
             notificationDetails.innerHTML = `<h2>ไม่มีข้อความที่จะแสดง</h2>`;
+          }
+        } else {
+          console.error("Element 'notificationDetails' not found in DOM");
+          return;
         }
-    } else {
-        console.error("Element 'notificationDetails' not found in DOM");
-        return;
-    }
 
-    const notificationImageContainer = document.getElementById("notificationImageContainer");
-    
-    if (notificationImageContainer) {
-        // ตรวจสอบว่ามีรูปภาพในข้อมูลหรือไม่
-        if (data && data.PostContent) {
+        if (notificationImageContainer) {
+          // ตรวจสอบว่า data.PostContent มีค่าหรือไม่ก่อนที่จะทำงานกับรูปภาพ
+          if (data && data.PostContent) {
             const img = document.createElement("img");
-            img.src = data.PostContent;  // ใช้ URL ของรูปภาพที่ได้จาก Firebase
-            img.style.maxWidth = "300px";  // ตั้งค่าขนาดสูงสุดของรูปภาพ
+            img.src = data.PostContent; // ใช้ URL ของรูปภาพที่ได้จาก Firebase
+            img.style.maxWidth = "300px"; // ตั้งค่าขนาดสูงสุดของรูปภาพ
             img.style.borderRadius = "10px";
             img.style.marginTop = "15px";
-            notificationImageContainer.innerHTML = '';  // ล้าง container ก่อนเพิ่มรูปภาพใหม่
-            notificationImageContainer.appendChild(img);  // เพิ่มรูปภาพเข้าไปใน container
-            notificationImageContainer.style.display = "block";  // แสดง container รูปภาพ
+            notificationImageContainer.innerHTML = ""; // ล้าง container ก่อนเพิ่มรูปภาพใหม่
+            notificationImageContainer.appendChild(img); // เพิ่มรูปภาพเข้าไปใน container
+            notificationImageContainer.style.display = "block"; // แสดง container รูปภาพ
+          } else {
+            // หากไม่มีรูปภาพซ่อน container รูปภาพ
+            notificationImageContainer.innerHTML = "";
+            notificationImageContainer.style.display = "none";
+          }
         } else {
-            notificationImageContainer.innerHTML = '';  // ไม่มีรูปภาพ
-            notificationImageContainer.style.display = "none";  // ซ่อน container รูปภาพ
+          console.error(
+            "Element 'notificationImageContainer' not found in DOM"
+          );
         }
-    } else {
-        console.error("Element 'notificationImageContainer' not found in DOM");
-    }
+        console.log("PostContent:", data.PostContent);
 
-
-
-  
-
-    // แสดงข้อมูล JoinRequest ถ้ามี
-    if (data.Type === "JoinRequest" && data.JoinRequestId) {
-        db.collection("JoinRequests")
+        // แสดงข้อมูล JoinRequest ถ้ามี
+        if (data.Type === "JoinRequest" && data.JoinRequestId) {
+          db.collection("JoinRequests")
             .doc(data.JoinRequestId)
             .get()
             .then((joinDoc) => {
-                if (joinDoc.exists) {
-                    const joinData = joinDoc.data();
-                    const status = joinData.Status;
+              if (joinDoc.exists) {
+                const joinData = joinDoc.data();
+                const status = joinData.Status;
 
-                    if (status === "Pending") {
-                        notificationDetails.innerHTML = `
+                if (status === "Pending") {
+                  notificationDetails.innerHTML = `
                             <h2>${data.Message}</h2>
-                            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString("th-TH")}</p>
-                            <p>มีการขอเข้าร่วมห้องเรียนจาก ${joinData.RequesterEmail} โปรดพิจารณา !! 😊</p>
+                            <p>${new Date(
+                              data.CreatedAt.seconds * 1000
+                            ).toLocaleString("th-TH")}</p>
+                            <p>มีการขอเข้าร่วมห้องเรียนจาก ${
+                              joinData.RequesterEmail
+                            } โปรดพิจารณา !! 😊</p>
                         `;
 
-                        const buttonsContainer = document.createElement("div");
-                        buttonsContainer.classList.add("notification-buttons");
+                  const buttonsContainer = document.createElement("div");
+                  buttonsContainer.classList.add("notification-buttons");
 
-                        const acceptButton = document.createElement("button");
-                        acceptButton.classList.add("accept");
-                        acceptButton.textContent = "Accept";
-                        acceptButton.onclick = function () {
-                            handleJoinRequest(docId, true);
-                            buttonsContainer.style.display = "none";
-                        };
+                  const acceptButton = document.createElement("button");
+                  acceptButton.classList.add("accept");
+                  acceptButton.textContent = "Accept";
+                  acceptButton.onclick = function () {
+                    handleJoinRequest(docId, true);
+                    buttonsContainer.style.display = "none";
+                  };
 
-                        const refuseButton = document.createElement("button");
-                        refuseButton.classList.add("refuse");
-                        refuseButton.textContent = "Refuse";
-                        refuseButton.onclick = function () {
-                            handleJoinRequest(docId, false);
-                            buttonsContainer.style.display = "none";
-                        };
+                  const refuseButton = document.createElement("button");
+                  refuseButton.classList.add("refuse");
+                  refuseButton.textContent = "Refuse";
+                  refuseButton.onclick = function () {
+                    handleJoinRequest(docId, false);
+                    buttonsContainer.style.display = "none";
+                  };
 
-                        buttonsContainer.appendChild(acceptButton);
-                        buttonsContainer.appendChild(refuseButton);
-                        notificationDetails.appendChild(buttonsContainer);
-                    } else if (status === "Accepted") {
-                        notificationDetails.innerHTML = `
-                            <h2>คุณได้อนุญาตให้ ${joinData.RequesterEmail} เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</h2>
-                            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString("th-TH")}</p>
+                  buttonsContainer.appendChild(acceptButton);
+                  buttonsContainer.appendChild(refuseButton);
+                  notificationDetails.appendChild(buttonsContainer);
+                } else if (status === "Accepted") {
+                  notificationDetails.innerHTML = `
+                            <h2>คุณได้อนุญาตให้ ${
+                              joinData.RequesterEmail
+                            } เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</h2>
+                            <p>${new Date(
+                              data.CreatedAt.seconds * 1000
+                            ).toLocaleString("th-TH")}</p>
                         `;
-                    } else if (status === "Refused") {
-                        notificationDetails.innerHTML = `
-                            <h2>คุณได้ปฏิเสธ ${joinData.RequesterEmail} ในการขอเข้าร่วมห้องเรียน!! 😔</h2>
-                            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString("th-TH")}</p>
+                } else if (status === "Refused") {
+                  notificationDetails.innerHTML = `
+                            <h2>คุณได้ปฏิเสธ ${
+                              joinData.RequesterEmail
+                            } ในการขอเข้าร่วมห้องเรียน!! 😔</h2>
+                            <p>${new Date(
+                              data.CreatedAt.seconds * 1000
+                            ).toLocaleString("th-TH")}</p>
                         `;
-                    }
-                } else {
-                    console.error("JoinRequest not found with ID:", data.JoinRequestId);
-                    notificationDetails.innerHTML = `<h2>ไม่พบข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
                 }
+              } else {
+                console.error(
+                  "JoinRequest not found with ID:",
+                  data.JoinRequestId
+                );
+                notificationDetails.innerHTML = `<h2>ไม่พบข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
+              }
             })
             .catch((error) => {
-                console.error("Error fetching JoinRequest:", error);
-                notificationDetails.innerHTML = `<h2>เกิดข้อผิดพลาดในการดึงข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
+              console.error("Error fetching JoinRequest:", error);
+              notificationDetails.innerHTML = `<h2>เกิดข้อผิดพลาดในการดึงข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
             });
-    } else {
-        notificationDetails.innerHTML = `
+        } else {
+          notificationDetails.innerHTML = `
             <h2>${data.Message}</h2>
-            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString("th-TH")}</p>
+            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
+              "th-TH"
+            )}</p>
         `;
-    }
+        }
 
-
-    // ทำเครื่องหมายว่าแจ้งเตือนนี้ได้อ่านแล้ว
-    db.collection("Notifications")
-        .doc(docId)
-        .update({
+        // ทำเครื่องหมายว่าแจ้งเตือนนี้ได้อ่านแล้ว
+        db.collection("Notifications")
+          .doc(docId)
+          .update({
             isRead: true,
-        })
-        .then(() => {
-            const notificationItem = document.querySelector(`.notification-item[data-id='${docId}']`);
+          })
+          .then(() => {
+            const notificationItem = document.querySelector(
+              `.notification-item[data-id='${docId}']`
+            );
             if (notificationItem) {
-                notificationItem.classList.remove("unread");
-                notificationItem.classList.add("read");
+              notificationItem.classList.remove("unread");
+              notificationItem.classList.add("read");
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error("Error marking notification as read: ", error);
-        });
-}
+          });
+      }
 
       window.onload = loadNotifications;
 
@@ -884,7 +941,6 @@ function loadNotifications() {
           dropdownMenu.style.display = "none";
         }
       });
-
     </script>
-</body>
+  </body>
 </html>
