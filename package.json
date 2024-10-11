@@ -2,16 +2,16 @@
   "name": "project-comparison",
   "version": "1.0.0",
   "scripts": {
-    "start": "node index.js",  
+    "start": "node index.js",
     "build": "echo 'Building project...' && mkdir build && echo '<html><body><h1>Build Completed</h1></body></html>' > build/index.html",
-    "lint": "eslint .", 
-    "test": "jest --coverage", 
-    "integration-test": "jest --config jest.integration.config.js", 
-    "e2e": "npx cypress run", 
-    "audit": "npm audit", 
+    "lint": "eslint .",
+    "test": "jest --coverage",
+    "integration-test": "jest --config jest.integration.config.js",
+    "e2e": "npx cypress run",
+    "audit": "npm audit",
     "deploy": "echo 'Deploying project...' && cp -r build/* /path/to/deployment/directory",
-    "security-check": "npm audit", 
-    "security-fix": "npm audit fix" 
+    "security-check": "npm audit",
+    "security-fix": "npm audit fix"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -21,7 +21,11 @@
     "babel-jest": "^29.7.0",
     "cypress": "^13.14.2",
     "eslint": "^8.57.1",
-    "jest": "^29.7.0"
+    "eslint-plugin-html": "^8.1.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^25.0.1",
+    "util": "^0.12.5"
   },
   "dependencies": {
     "firebase": "^8.10.1",

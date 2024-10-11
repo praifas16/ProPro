@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignment</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Inconsolata:wght@200..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Signika:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Comfortaa", "Inconsolata", "Jost", "Signika", sans-serif;
+        background-color: #2f2f2f;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      #searchResults {
+        background-color: #4d4d4d;
+        color: white;
+        position: absolute;
+        z-index: 1000;
+        width: 400px;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        top: 38px;
+      }
+
+      #searchResults .result-item {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #555;
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+      }
+
+      #searchResults .result-item:hover {
+        background-color: #555;
+      }
+
+      #searchResults .result-item p {
+        margin: 0;
+        color: #fff;
+      }
+
+      #searchResults .result-item span {
+        color: #727272;
+      }
+
+      .assignments-topbar {
+        background-color: #272727;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 115px;
+        border-bottom: 1px solid #3d3d3d;
+      }
+
+      .assignments-topbar .title-section {
+        display: flex;
+        align-items: center;
+      }
+
+      .assignments-topbar .title-section i {
+        font-size: 24px;
+        color: white;
+        margin-right: 10px;
+      }
+
+      .assignments-topbar .title-section h1 {
+        color: white;
+        font-size: 20px;
+        margin: 0;
+      }
+
+      .assignments-topbar .icons-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-right: -100px;
+      }
+
+      .assignments-topbar .icons-section i {
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      h1 i {
+        margin-right: 10px;
+        color: #ffffff;
+        font-size: 24px;
+      }
+
+      .topbar {
+        background-color: #2e2e2e;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0px 2px 4px rgba(177, 177, 177, 0.1);
+        position: relative;
+        z-index: 2;
+      }
+
+      .topbar .search-bar {
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-start;
+        position: relative;
+        padding-left: 480px;
+      }
+
+      .topbar .search-bar input {
+        width: 400px;
+        padding: 5px 10px 5px 35px;
+        border-radius: 20px;
+        border: 1px solid #717171;
+        background-color: #333;
+        color: #fff;
+        font-size: 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .topbar .search-bar .fas {
+        position: absolute;
+        left: 490px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #fff;
+        z-index: 2;
+      }
+
+      .topbar .user-section {
+        display: flex;
+        align-items: center;
+        position: relative;
+      }
+
+      #user-email {
+        color: white;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+
+      .user-icon {
+        cursor: pointer;
+        position: relative;
+      }
+
+      .user-icon i {
+        font-size: 30px;
+        color: white;
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50px;
+        background-color: #fff;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+        z-index: 1000;
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .dropdown-menu a:hover {
+        background-color: #f0f0f0;
+      }
+
+      .sidebar {
+        width: 100px;
+        background-color: #333;
+        color: white;
+        height: 100vh;
+        padding: 20px 0;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        z-index: 1;
+      }
+
+      .menu-items {
+        margin-top: 40px;
+      }
+
+      .sidebar a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+        padding: 10px;
+        text-decoration: none;
+        margin-bottom: 20px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .sidebar a:hover {
+        background-color: #5f5f5f;
+        border-radius: 4px;
+        width: 80%;
+        text-align: center;
+      }
+
+      .sidebar i {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+
+      .content {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px;
+        padding-left: 120px;
+        background-color: #2f2f2f;
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .assignment-detail {
+        width: 100%;
+        max-width: 1300px;
+        background-color: #3b3b3b;
+        padding: 20px;
+        border-radius: 8px;
+        position: fixed;
+      }
+
+      .back-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .back-btn i {
+        margin-right: 8px;
+      }
+
+      .header-section {
+        display: flex;
+        color: white;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5;
+      }
+
+      .header-section h2 {
+        color: white;
+        font-size: 24px;
+        margin: 0;
+      }
+
+      .details-section {
+        margin-top: 20px;
+      }
+
+      .details-section h3 {
+        color: white;
+        margin-bottom: 5px;
+        font-size: 16px;
+      }
+
+      .details-section p {
+        font-size: 16px;
+        margin: 0;
+        color: #bbb;
+      }
+
+      .my-work {
+        margin-top: 20px;
+      }
+
+      .my-work .work-item {
+        display: flex;
+        align-items: center;
+        background-color: #4d4d4d;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+
+      .my-work .work-item i {
+        margin-right: 10px;
+      }
+
+      .my-work .work-item span {
+        color: #fff;
+      }
+
+      .work-item span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        max-width: 100%;
+        color: #fff;
+        vertical-align: middle;
+      }
+
+      .right-section {
+        color: white;
+        text-align: right;
+      }
+
+      .undo-btn {
+        background-color: #4a90e2;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .undo-btn:hover {
+        background-color: #878787;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        background-color: rgb(255, 157, 0);
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 12px;
+        display: none;
+      }
+
+      .attach-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        /* ระยะห่างระหว่างปุ่ม Attach และไฟล์ */
+      }
+
+      #file-list {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        background-color: #4d4d4d;
+        padding: 5px 10px;
+        border-radius: 5px;
+        min-width: 150px;
+        /* กำหนดความกว้างขั้นต่ำให้กล่อง */
+        max-width: 250px;
+        /* กำหนดความกว้างสูงสุด */
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        justify-content: space-between;
+        flex-grow: 1;
+        /* ให้กล่องขยายได้ */
+      }
+
+      .custom-file-upload {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        color: #7e7e7e;
+        font-size: 16px;
+      }
+
+      .custom-file-upload i {
+        margin-right: 8px;
+        font-size: 20px;
+      }
+
+      #file-upload {
+        display: none;
+      }
+
+      .file-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 16px;
+        max-width: 250px;
+        /* ปรับขนาดกว้าง */
+        width: 100%;
+        /* กำหนดให้แต่ละไฟล์มีความกว้างเท่ากัน */
+        display: inline-block;
+      }
+
+      .file-extension {
+        margin-left: auto;
+        padding-left: 15px;
+        color: #7e7e7e;
+        font-size: 16px;
+      }
+
+      .custom-file-upload:hover {
+        color: #fff;
+      }
+      /* Style for the modal */
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 80;
+        right: -5.9%;
+        top: 37.5%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        background-color: rgb(199, 199, 199);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .modal-content {
+        padding: 10px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      #creditInput {
+        width: 95%;
+        padding: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        background-color: #4a90e2;
+        color: rgb(255, 255, 255);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        background-color: rgb(255, 157, 0);
+        color: white;
+        border-radius: 50%;
+        padding: 2px 5px;
+        font-size: 12px;
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="ค้นหา (Cmd+E)" id="searchInput" />
+        <div id="searchResults"></div>
+      </div>
+      <div class="user-section">
+        <div id="user-email"></div>
+        <div class="user-icon" id="userIcon">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="#" id="logoutLink">Log out</a>
+          <script src="logout.js"></script>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignments topbar -->
+    <div class="assignments-topbar">
+      <div class="title-section">
+        <i class="fas fa-backpack"></i>
+        <h1><i class="fas fa-book"></i> Assignments</h1>
+      </div>
+      <div class="icons-section">
+        <i class="fas fa-expand"></i>
+        <i class="fas fa-sync-alt"></i>
+        <i class="fas fa-lock"></i>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="assignment-detail">
+        <div class="header-section">
+          <div>
+            <h2 id="assignment-title">Loading assignment title...</h2>
+            <p class="due-date">Due yesterday at 3:00 PM</p>
+          </div>
+          <div class="right-section">
+            <button class="undo-btn">Turn in</button>
+            <h3>Points</h3>
+            <p>No points</p>
+          </div>
+        </div>
+        <div class="details-section instructions">
+          <h3>Instructions</h3>
+          <p>None</p>
+        </div>
+        <div class="details-section my-work">
+          <h3>My work</h3>
+          <div class="work-item">
+            <i class="fas fa-file"></i>
+            <span id="fileName">10.3878.whiteboard</span>
+          </div>
+        </div>
+        <div class="attach-button">
+          <label for="file-upload" class="custom-file-upload"
+            ><i class="fas fa-paperclip"></i> Attach</label
+          >
+          <input id="file-upload" type="file" multiple />
+          <div id="file-list"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="creditModal" class="modal">
+      <div class="modal-content">
+        <h4>Give Credit Mark</h4>
+        <p>Maximum points: <span id="maxPointsDisplay"></span></p>
+        <input
+          type="number"
+          id="creditInput"
+          placeholder="Enter points"
+          min="0"
+        />
+      </div>
+      <div class="modal-footer">
+        <button id="submitCreditMark" class="modal-close btn">Submit</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="menu-items">
+        <a href="studenthead.html?email={{email}}"
+          ><i class="fa fa-chalkboard-teacher"></i><span>Classroom</span></a
+        >
+        <a href="Chat.html?email={{email}}"
+          ><i class="fa fa-comments"></i><span>Chat</span></a
+        >
+        <a
+          href="Notifications.html?email="
+          id="notificationMenu"
+          style="position: relative"
+        >
+          <i class="fa fa-bell"></i>
+          <span>Notifications</span>
+          <!-- Badge สำหรับการแจ้งเตือน -->
+          <span class="notification-badge" id="notificationBadge">0</span>
+        </a>
+        <a href="Assignment.html?email={{email}}"
+          ><i class="fa fa-tasks"></i><span>Assignment</span></a
+        >
+        <a href="Call.html?email={{email}}"
+          ><i class="fa fa-phone"></i><span>Call</span></a
+        >
+      </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyC1qX4ttFX42SzVFbg6LqjNJv9rRSepYXw",
+        authDomain: "project-63a86.firebaseapp.com",
+        projectId: "team-1849c",
+        storageBucket: "team-1849c.appspot.com",
+        messagingSenderId: "448111875731",
+        appId: "1:448111875731:web:6180e0c46cc10593051f66",
+        measurementId: "G-SR4EFC2VFC",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      var db = firebase.firestore();
+
+      // ดึงพารามิเตอร์จาก URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const assignmentId = urlParams.get("assignmentId");
+      const email = urlParams.get("email");
+      const submissionId = urlParams.get("SubmissionId");
+
+      // ตรวจสอบและแสดงอีเมลที่มุมขวาบน
+      if (email) {
+        document.getElementById("user-email").textContent = email;
+
+        // อัปเดตลิงก์ใน Sidebar ด้วยอีเมล
+        document.querySelectorAll(".menu-items a").forEach((link) => {
+          const url = new URL(link.href);
+          url.searchParams.set("email", email); // เพิ่มพารามิเตอร์ email
+          link.href = url.toString(); // อัปเดตลิงก์
+        });
+      } else {
+        document.getElementById("user-email").textContent =
+          "No email available";
+      }
+      if (submissionId) {
+        // ค้นหาข้อมูลใน collection Submissions โดยใช้ SubmissionId
+        const submissionRef = db.collection("Submissions").doc(submissionId);
+
+        submissionRef
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const submissionData = doc.data(); // ดึงข้อมูลที่ได้จากเอกสาร
+              console.log("Submission data:", submissionData); // แสดงข้อมูลใน console
+            } else {
+              console.error(
+                "No matching document found for SubmissionId:",
+                submissionId
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching submission data:", error);
+          });
+      } else {
+      }
+
+      document
+        .getElementById("file-upload")
+        .addEventListener("change", function (event) {
+          const fileList = event.target.files;
+          const fileDisplay = document.getElementById("file-list");
+          fileDisplay.innerHTML = ""; // ล้างไฟล์ก่อนหน้า
+
+          for (let i = 0; i < fileList.length; i++) {
+            const file = fileList[i];
+            const fileItem = document.createElement("div");
+            fileItem.classList.add("file-item");
+
+            const fileIcon = document.createElement("i");
+            fileIcon.classList.add("fas", "fa-file");
+
+            const fileNameElement = document.createElement("span");
+            fileNameElement.textContent = file.name;
+
+            fileItem.appendChild(fileIcon);
+            fileItem.appendChild(fileNameElement);
+            fileDisplay.appendChild(fileItem);
+          }
+        });
+
+      if (assignmentId) {
+        const assignmentRef = db.collection("Assignments").doc(assignmentId);
+
+        assignmentRef
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              console.log("Data retrieved from Firestore:", doc.data());
+              document.getElementById("assignment-title").textContent =
+                data.title || "No title available";
+              const dueDate = data.dueDate
+                ? formatDate(data.dueDate)
+                : "No due date"; // เรียกใช้ formatDate เพื่อแปลงวันที่เป็น วดป
+              const dueTime = data.dueTime ? data.dueTime : "No due time"; // ใช้ string โดยตรง
+              document.querySelector(
+                ".due-date"
+              ).textContent = `Due ${dueDate} at ${dueTime}`;
+              document.querySelector(
+                ".details-section.instructions p"
+              ).textContent = data.instructions || "No instructions available";
+              if (data.fileUrl) {
+                displayFile(data.fileUrl);
+              }
+            } else {
+              console.error("No matching document found.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching assignment:", error);
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const emailFromUrl = urlParams.get("email");
+        if (emailFromUrl) {
+          loadNotificationsCount(emailFromUrl); // เรียกใช้ฟังก์ชันเพื่อนับการแจ้งเตือน
+        }
+      });
+
+      function loadNotificationsCount(userEmail) {
+        db.collection("Notifications")
+          .where("To", "==", userEmail)
+          .where("isRead", "==", false) // เฉพาะการแจ้งเตือนที่ยังไม่ได้อ่าน
+          .onSnapshot((snapshot) => {
+            console.log("Notifications snapshot size:", snapshot.size); // เพิ่ม log เพื่อตรวจสอบว่า snapshot size เท่าไหร่
+            const unreadCount = snapshot.size; // นับจำนวนเอกสารที่ยังไม่ได้อ่าน
+
+            const notificationBadge =
+              document.getElementById("notificationBadge");
+            if (unreadCount > 0) {
+              notificationBadge.style.display = "block";
+              notificationBadge.textContent = unreadCount;
+            } else {
+              notificationBadge.style.display = "none";
+            }
+          });
+      }
+
+      function displayFile(fileUrl) {
+        const fileSection = document.querySelector(
+          ".details-section.my-work .work-item"
+        );
+        const fileName = getFileName(fileUrl);
+
+        if (isImageFile(fileUrl)) {
+          const imgElement = document.createElement("img");
+          imgElement.src = fileUrl;
+          imgElement.alt = fileName;
+          imgElement.style.maxWidth = "100%";
+          fileSection.innerHTML = "";
+          fileSection.appendChild(imgElement);
+          const fileNameElement = document.createElement("span");
+          fileNameElement.textContent = fileName;
+          fileNameElement.classList.add("file-name");
+          fileSection.appendChild(fileNameElement);
+        } else {
+          const fileLink = document.createElement("a");
+          fileLink.href = fileUrl;
+          fileLink.textContent = fileName;
+          fileLink.target = "_blank";
+          fileLink.style.color = "#fff";
+          fileLink.style.display = "inline-block";
+          fileLink.style.maxWidth = "100%";
+          fileLink.style.whiteSpace = "nowrap";
+          fileLink.style.overflow = "hidden";
+          fileLink.style.textOverflow = "ellipsis";
+          fileSection.innerHTML = "";
+          fileSection.appendChild(fileLink);
+        }
+      }
+
+      function getFileName(fileUrl) {
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+      }
+
+      function isImageFile(fileUrl) {
+        const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
+        const fileExtension = fileUrl.split(".").pop().toLowerCase();
+        return imageExtensions.includes(fileExtension);
+      }
+
+      function formatDate(dueDate) {
+        const dateObj = new Date(dueDate);
+        const options = {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        };
+        return dateObj.toLocaleDateString("th-TH", options);
+      }
+
+      function formatTime(dueTime) {
+        const timeObj = new Date(`1970-01-01T${dueTime}`);
+        const options = {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        };
+        return timeObj.toLocaleTimeString("en-US", options);
+      }
+
+      document
+        .querySelector(".undo-btn")
+        .addEventListener("click", async function () {
+          const buttonLabel = this.textContent.trim(); // ตรวจสอบข้อความของปุ่มปัจจุบัน
+          const files = document.getElementById("file-upload").files;
+
+          // ตรวจสอบก่อนว่ามีการแนบไฟล์หรือไม่ ถ้าไม่มีไฟล์ให้ข้ามส่วนนี้
+          if (files.length > 0) {
+            const fileList = [];
+
+            for (let i = 0; i < files.length; i++) {
+              fileList.push(files[i].name);
+            }
+
+            console.log("Files attached:", fileList);
+            // ที่นี่คุณสามารถเพิ่มโค้ดสำหรับการจัดการไฟล์ที่แนบได้
+            // เช่น การอัปโหลดไปยัง Firebase Storage หรือที่อื่น
+            return; // ข้ามส่วนที่เกี่ยวกับ Firestore และข้อมูล assignment
+          }
+
+          // ถ้ามี assignmentId และไม่ได้แนบไฟล์ ให้ทำงานส่วนดึงข้อมูล
+          if (assignmentId) {
+            const assignmentRef = db
+              .collection("Assignments")
+              .doc(assignmentId);
+
+            assignmentRef
+              .get()
+              .then((doc) => {
+                if (doc.exists && doc.id === assignmentId) {
+                  // ตรวจสอบว่า DocumentID ตรงกับ assignmentId
+                  const data = doc.data();
+                  console.log("Data retrieved from Firestore:", doc.data());
+                  document.getElementById("assignment-title").textContent =
+                    data.title || "No title available";
+
+                  // แสดงวันที่ Due Date เป็น วดป (วันเดือนปี)
+                  const dueDate = data.dueDate
+                    ? new Date(data.dueDate).toLocaleDateString("th-TH")
+                    : "No due date";
+                  const dueTime = data.dueTime ? data.dueTime : "No due time"; // ใช้ string โดยตรง
+                  document.querySelector(
+                    ".due-date"
+                  ).textContent = `Due ${dueDate} at ${dueTime}`;
+
+                  // แสดงคำสั่งงานหรือ Instructions
+                  document.querySelector(
+                    ".details-section.instructions p"
+                  ).textContent =
+                    data.instructions || "No instructions available";
+
+                  // ถ้ามีไฟล์แนบ แสดงไฟล์แนบ
+                  if (data.fileUrl) {
+                    displayFile(data.fileUrl);
+                  }
+                } else {
+                  console.error("No matching document found.");
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching assignment:", error);
+              });
+          }
+        });
+      document.addEventListener("DOMContentLoaded", function () {
+        const buttonLabel = document
+          .querySelector(".undo-btn")
+          .textContent.trim(); // ตรวจสอบข้อความของปุ่มปัจจุบัน
+        const attachButton = document.querySelector(".custom-file-upload"); // ปุ่มแนบไฟล์
+        const fileInput = document.getElementById("file-upload"); // input ไฟล์
+
+        // ตรวจสอบสถานะของปุ่ม Undo/Turn in เพื่อปิดการใช้งาน Attach
+        if (buttonLabel === "Turn in") {
+          // เปิดการใช้งานปุ่มแนบไฟล์เมื่อเป็น "Turn in"
+          attachButton.style.pointerEvents = "auto";
+          attachButton.style.opacity = "1"; // แสดงปุ่มปกติ
+          fileInput.disabled = false;
+        } else {
+          // ปิดการใช้งานปุ่มแนบไฟล์เมื่อเป็น "Undo Turn in" หรือ "Give credit mark"
+          attachButton.style.pointerEvents = "none";
+          attachButton.style.opacity = "0.5"; // ทำให้ปุ่มดูไม่สามารถคลิกได้
+          fileInput.disabled = true;
+        }
+      });
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("keyup", (event) => {
+          const query = event.target.value.trim().toLowerCase();
+          const searchResults = document.getElementById("searchResults");
+          searchResults.innerHTML = "";
+
+          if (query !== "") {
+            searchInCollection("Student", query, searchResults);
+            searchInCollection("Teacher", query, searchResults);
+          }
+        });
+
+      function searchInCollection(collectionName, query, searchResults) {
+        db.collection(collectionName)
+          .get()
+          .then((querySnapshot) => {
+            let found = false;
+
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              if (
+                data &&
+                data.Email &&
+                data.Email.toLowerCase().startsWith(query)
+              ) {
+                found = true;
+                const resultItem = document.createElement("div");
+                resultItem.classList.add("result-item");
+
+                const name = document.createElement("p");
+                name.textContent = data.Username
+                  ? `${data.Username}`
+                  : "No Username";
+
+                const emailSpan = document.createElement("span");
+                emailSpan.textContent = `${data.Email}`;
+
+                resultItem.appendChild(name);
+                resultItem.appendChild(emailSpan);
+
+                searchResults.appendChild(resultItem);
+              }
+            });
+
+            if (!found) {
+              const noResultItem = document.createElement("div");
+              noResultItem.classList.add("result-item");
+              noResultItem.textContent = `No results found in ${collectionName}.`;
+              searchResults.appendChild(noResultItem);
+            }
+          })
+          .catch((error) => {
+            console.error(
+              `Error getting documents from ${collectionName} collection: `,
+              error
+            );
+          });
+      }
+
+      function loadAssignmentFromSubmission(submissionId) {
+        // ตรวจสอบว่า SubmissionId ถูกส่งมาหรือไม่
+        if (submissionId) {
+          // ค้นหาใน collection Submissions โดยใช้ SubmissionId
+          db.collection("Submissions")
+            .doc(submissionId)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const submissionData = doc.data();
+                const assignmentId = submissionData.assignmentId;
+
+                // ตรวจสอบว่ามี AssignmentId หรือไม่
+                if (assignmentId) {
+                  console.log("AssignmentId from Submission:", assignmentId);
+
+                  // เรียกใช้ฟังก์ชันเพื่อดึงข้อมูล assignment
+                  loadAssignmentData(assignmentId);
+                } else {
+                  console.error(
+                    "AssignmentId is not available in the submission document."
+                  );
+                }
+              } else {
+                console.error("No matching submission document found.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching submission data:", error);
+            });
+        } else {
+          console.error("SubmissionId not found in URL.");
+        }
+      }
+
+      function loadAssignmentData(assignmentId) {
+        if (assignmentId) {
+          // ค้นหาใน collection Assignments โดยใช้ AssignmentId
+          db.collection("Assignments")
+            .doc(assignmentId)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const assignmentData = doc.data();
+                console.log("Assignment data:", assignmentData); // แสดงข้อมูลใน console
+
+                // อัปเดตส่วนหัวเรื่องของ assignment
+                document.getElementById("assignment-title").textContent =
+                  assignmentData.title || "No title available";
+
+                // แสดงวันครบกำหนด
+                const dueDate = assignmentData.dueDate
+                  ? new Date(assignmentData.dueDate).toLocaleDateString("th-TH")
+                  : "No due date";
+                const dueTime = assignmentData.dueTime || "No due time";
+                document.querySelector(
+                  ".due-date"
+                ).textContent = `Due ${dueDate} at ${dueTime}`;
+
+                // แสดงคำสั่งงาน (instructions)
+                document.querySelector(
+                  ".details-section.instructions p"
+                ).textContent =
+                  assignmentData.instructions || "No instructions available";
+
+                // ถ้ามีไฟล์แนบ แสดงไฟล์แนบ
+                if (assignmentData.fileUrl) {
+                  displayFile(assignmentData.fileUrl);
+                }
+              } else {
+                console.error("No matching assignment document found.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching assignment data:", error);
+            });
+        } else {
+          console.error("AssignmentId is undefined or null.");
+        }
+      }
+
+      // Function to handle different ID types (SubmissionId or AssignmentId)
+      function handleUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = urlParams.get("SubmissionId");
+        const assignmentId = urlParams.get("assignmentId");
+
+        if (submissionId) {
+          // ถ้ามี SubmissionId ให้นำไปตรวจสอบใน Submissions และดึง assignmentId
+          loadAssignmentFromSubmission(submissionId);
+
+          // เปลี่ยนปุ่ม Turn in เป็นปุ่ม Give credit mark เมื่อมี SubmissionId
+          const turnInButton = document.querySelector(".undo-btn");
+          if (turnInButton) {
+            turnInButton.textContent = "Give credit mark"; // เปลี่ยนข้อความในปุ่ม
+          }
+        } else if (assignmentId) {
+          // ถ้ามี AssignmentId ให้นำไปดึงข้อมูลจาก Assignments โดยตรง
+          console.log("AssignmentId from URL:", assignmentId);
+        } else {
+          console.error("No valid ID found in URL.");
+        }
+      }
+
+      // เรียกใช้ฟังก์ชัน handleUrlParameters
+      handleUrlParameters();
+
+      // ฟังก์ชันสำหรับการให้คะแนน
+      function handleCreditMark(maxPoints) {
+        // ป้อนคะแนนผ่าน prompt
+        let givenPoints = prompt(
+          `Enter the credit mark (Maximum ${maxPoints} points):`
+        );
+
+        // ตรวจสอบว่าคะแนนที่ป้อนไม่เกินคะแนนสูงสุด
+        if (givenPoints !== null) {
+          givenPoints = parseFloat(givenPoints); // แปลงคะแนนเป็นตัวเลข
+
+          if (isNaN(givenPoints)) {
+            alert("Please enter a valid number.");
+          } else if (givenPoints > maxPoints) {
+            alert(`Points cannot exceed ${maxPoints}.`);
+          } else if (givenPoints < 0) {
+            alert("Points cannot be negative.");
+          } else {
+            // หากคะแนนถูกต้อง ให้บันทึกคะแนนลงใน Firestore
+            saveCreditMark(givenPoints);
+          }
+        }
+      }
+
+      // ฟังก์ชันนี้จะตรวจสอบวันที่กำหนดส่งและปรับสีของปุ่มตามเงื่อนไข
+      function checkDueDateAndUpdateButton(dueDate, dueTime) {
+        const turnInButton = document.querySelector(".undo-btn");
+        const attachButton = document.querySelector(".custom-file-upload"); // ปุ่มแนบไฟล์
+        const fileInput = document.getElementById("file-upload"); // input สำหรับไฟล์
+
+        // แปลงวันที่และเวลาของกำหนดส่งให้อยู่ในรูปแบบที่เหมาะสม
+        const dueDateTime = new Date(`${dueDate}T${dueTime}`);
+        const currentDate = new Date(); // วันที่ปัจจุบัน
+
+        // เปรียบเทียบวันที่กำหนดส่งกับวันที่ปัจจุบัน
+        if (currentDate > dueDateTime) {
+          // ถ้ากำหนดส่งเลยวันที่ปัจจุบันแล้ว ให้เปลี่ยนสีปุ่มเป็นสีเขียวและปิดการใช้งานปุ่ม
+          turnInButton.style.backgroundColor = "#4CAF50"; // สีเขียว
+          turnInButton.disabled = true; // ปิดการใช้งานปุ่ม Turn in หรือ Undo Turn in
+          turnInButton.style.pointerEvents = "none"; // ป้องกันการคลิกที่ปุ่ม
+
+          // ปิดการใช้งานปุ่มแนบไฟล์
+          attachButton.style.pointerEvents = "none"; // ปิดการคลิกปุ่มแนบไฟล์
+          attachButton.style.opacity = "0.5"; // ทำให้ปุ่มดูจางลง
+          fileInput.disabled = true; // ปิดการอัปโหลดไฟล์
+        } else {
+          // ถ้ายังไม่ถึงกำหนดส่ง ใช้สีปุ่มเดิม (สามารถปรับได้ตามความต้องการ)
+          turnInButton.style.backgroundColor = "#4a90e2"; // สีฟ้าเริ่มต้น
+          turnInButton.disabled = false; // เปิดการใช้งานปุ่ม
+          turnInButton.style.pointerEvents = "auto"; // เปิดให้คลิกปุ่มได้
+
+          // เปิดการใช้งานปุ่มแนบไฟล์
+          attachButton.style.pointerEvents = "auto"; // เปิดการคลิกปุ่มแนบไฟล์
+          attachButton.style.opacity = "1"; // ทำให้ปุ่มแสดงผลปกติ
+          fileInput.disabled = false; // เปิดให้สามารถอัปโหลดไฟล์ได้
+        }
+      }
+
+      // เมื่อหน้าเว็บโหลดเสร็จแล้ว ให้เรียกฟังก์ชันเพื่อดึงข้อมูลวันที่กำหนดส่ง
+      document.addEventListener("DOMContentLoaded", function () {
+        // ตรวจสอบว่ามี assignmentId อยู่ใน URL หรือไม่
+        if (assignmentId) {
+          const assignmentRef = db.collection("Assignments").doc(assignmentId);
+
+          assignmentRef
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const data = doc.data();
+
+                // ดึงวันที่และเวลาของกำหนดส่งจากเอกสาร
+                const dueDate = data.dueDate ? data.dueDate : "No due date";
+                const dueTime = data.dueTime ? data.dueTime : "No due time";
+
+                // เรียกฟังก์ชันเพื่อเปรียบเทียบวันที่และเปลี่ยนสีปุ่มและปิดการใช้งาน
+                checkDueDateAndUpdateButton(dueDate, dueTime);
+              } else {
+                console.error("No matching document found.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching assignment:", error);
+            });
+        }
+      });
+
+      // Function to check for duplicate score by SubmissionId
+      async function checkDuplicateScore(submissionId) {
+        const scoreQuery = db
+          .collection("Score")
+          .where("SubmissionId", "==", submissionId)
+          .limit(1); // Limit to 1 result
+
+        const querySnapshot = await scoreQuery.get();
+
+        if (!querySnapshot.empty) {
+          // If a score document with the same SubmissionId exists
+          const scoreDoc = querySnapshot.docs[0]; // Get the first matching document
+          return scoreDoc; // Return the existing score document
+        } else {
+          // No duplicate found
+          return null;
+        }
+      }
+
+      async function sendScoreNotification(
+        emailOfSubmitter,
+        scoreId,
+        scoreObtained
+      ) {
+        try {
+          // Query for an existing notification with the same ScoreId and To fields
+          const notificationQuery = db
+            .collection("Notifications")
+            .where("ScoreId", "==", scoreId)
+            .where("To", "==", emailOfSubmitter)
+            .limit(1); // Limit to 1 result to avoid multiple documents
+
+          const querySnapshot = await notificationQuery.get();
+
+          if (!querySnapshot.empty) {
+            // If a matching notification exists, update it
+            querySnapshot.forEach(async (doc) => {
+              const notificationRef = db
+                .collection("Notifications")
+                .doc(doc.id);
+              await notificationRef.update({
+                CreatedAt: firebase.firestore.FieldValue.serverTimestamp(), // Update the timestamp
+                Message: `Your assignment has been rescored ${scoreObtained} points.`, // Update the message
+                isRead: false, // Reset the read status
+              });
+              console.log("Updated existing score notification.");
+            });
+          } else {
+            // If no matching notification exists, create a new one
+            const notificationRef = db.collection("Notifications").doc(); // Create a new document with a generated ID
+            await notificationRef.set({
+              To: emailOfSubmitter,
+              Message: `Your assignment has been scored ${scoreObtained} points.`,
+              CreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              Type: "Score",
+              ScoreId: scoreId,
+              isRead: false,
+            });
+            console.log("Created new score notification.");
+          }
+        } catch (error) {
+          console.error("Error sending score notification:", error);
+        }
+      }
+
+      // Example usage in saveOrUpdateScore function
+      async function saveOrUpdateScore(
+        submissionId,
+        scorerEmail, // email ของผู้บันทึกคะแนน
+        maxPoints,
+        scoreObtained
+      ) {
+        try {
+          // ดึงข้อมูล submission เพื่อหาค่า assignmentId และ email ของผู้ที่ส่งงานจริง
+          const submissionDoc = await db
+            .collection("Submissions")
+            .doc(submissionId)
+            .get();
+          if (!submissionDoc.exists) {
+            throw new Error("Submission not found");
+          }
+
+          // ดึงค่า assignmentId และ submittedBy จาก submission document
+          const submissionData = submissionDoc.data();
+          const assignmentId = submissionData.assignmentId; // ใช้ assignmentId จาก Submission
+          const emailOfSubmitter = submissionData.submittedBy; // ใช้ email ของผู้ส่งงานจริงจาก Submission
+
+          // ตรวจสอบว่ามีคะแนนอยู่แล้วหรือไม่โดยใช้ SubmissionId
+          const existingScoreDoc = await checkDuplicateScore(submissionId);
+
+          if (existingScoreDoc) {
+            // ถ้ามีคะแนนอยู่แล้ว ให้ทำการอัปเดตเอกสาร Score ที่มีอยู่
+            const scoreRef = db.collection("Score").doc(existingScoreDoc.id);
+
+            await scoreRef.update({
+              points: maxPoints, // อัปเดตคะแนนเต็ม
+              ScoreObtained: scoreObtained, // อัปเดตคะแนนที่ได้
+              submittedAt: firebase.firestore.FieldValue.serverTimestamp(), // อัปเดต timestamp
+              submittedBy: scorerEmail, // อัปเดตผู้ที่บันทึกคะแนน
+            });
+
+            console.log("Score updated successfully:", {
+              ScoreId: scoreRef.id,
+              points: maxPoints,
+              ScoreObtained: scoreObtained,
+            });
+
+            // ส่งการแจ้งเตือนหลังจากที่บันทึกคะแนนแล้ว
+            await sendScoreNotification(
+              emailOfSubmitter,
+              scoreRef.id,
+              scoreObtained
+            );
+          } else {
+            // ถ้าไม่มีคะแนนในเอกสาร Score ให้สร้างใหม่
+            const scoreRef = db.collection("Score").doc();
+
+            const scoreData = {
+              ScoreId: scoreRef.id, // Generate a new ScoreId
+              submittedAt: firebase.firestore.FieldValue.serverTimestamp(), // Auto generate timestamp
+              submittedBy: scorerEmail, // บันทึก email ของผู้บันทึกคะแนน
+              assignmentId: assignmentId, // assignmentId ที่ดึงมาจากข้อมูล Submission
+              SubmissionId: submissionId, // SubmissionId จาก URL หรือเอกสาร
+              points: maxPoints, // คะแนนเต็มของ assignment
+              ScoreObtained: scoreObtained, // คะแนนที่ให้โดยผู้ให้คะแนน
+            };
+
+            // บันทึกข้อมูลคะแนนใหม่ใน Firestore
+            await scoreRef.set(scoreData);
+
+            console.log("Score saved successfully:", scoreData);
+
+            // ส่งการแจ้งเตือนหลังจากที่บันทึกคะแนนแล้ว
+            await sendScoreNotification(
+              emailOfSubmitter,
+              scoreRef.id,
+              scoreObtained
+            );
+          }
+
+          // ปิด modal หลังจากบันทึกคะแนนเสร็จ
+          document.getElementById("creditModal").style.display = "none";
+        } catch (error) {
+          console.error("Error saving/updating score:", error);
+        }
+      }
+
+      // Example usage when user clicks submit button
+      document
+        .querySelector("#submitCreditMark")
+        .addEventListener("click", async function () {
+          // Get values from the form or other sources
+          const urlParams = new URLSearchParams(window.location.search);
+          const submissionId = urlParams.get("SubmissionId"); // Get SubmissionId from URL
+          const scorerEmail = urlParams.get("email"); // Get email of scorer from URL
+
+          try {
+            // ดึงข้อมูล submission เพื่อหาค่า assignmentId
+            const submissionDoc = await db
+              .collection("Submissions")
+              .doc(submissionId)
+              .get();
+            if (!submissionDoc.exists) {
+              throw new Error("Submission not found");
+            }
+
+            const submissionData = submissionDoc.data();
+            const assignmentId = submissionData.assignmentId; // ดึง assignmentId จาก Submission
+
+            const maxPoints = 5; // Example max points from Firestore
+            const scoreObtained = parseFloat(
+              document.querySelector("#creditInput").value
+            ); // Score input by grader
+
+            if (scoreObtained <= maxPoints && scoreObtained >= 0) {
+              // Call the saveScore function to save the score
+              saveOrUpdateScore(
+                submissionId,
+                scorerEmail,
+                maxPoints,
+                scoreObtained
+              );
+            } else {
+              alert(
+                "Score is invalid. Please enter a value between 0 and " +
+                  maxPoints
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching submission data:", error);
+          }
+        });
+
+      // เมื่อคลิกปุ่ม Submit ในโมดาล
+      document
+        .getElementById("submitCreditMark")
+        .addEventListener("click", function () {
+          const inputPoints = parseFloat(
+            document.getElementById("creditInput").value
+          );
+          const maxPoints = 5; // ค่านี้ควรถูกดึงจาก Firestore
+
+          // ตรวจสอบว่าคะแนนอยู่ในช่วงที่กำหนด
+          if (
+            !isNaN(inputPoints) &&
+            inputPoints <= maxPoints &&
+            inputPoints >= 0
+          ) {
+          } else {
+            // ถ้าใส่คะแนนมากเกินไปหรือไม่ถูกต้อง ให้แสดงการเตือน
+            alert(`Please enter a valid number between 0 and ${maxPoints}`);
+            document.getElementById("creditInput").value = maxPoints; // ล็อกค่าให้เป็น maxPoints
+          }
+        });
+
+      // เพิ่มการป้องกันที่ input ให้ไม่สามารถกรอกเกินค่า maxPoints ได้
+      document
+        .getElementById("creditInput")
+        .addEventListener("input", function () {
+          const maxPoints = 5; // ดึง maxPoints จากข้อมูล
+          const inputPoints = parseFloat(this.value);
+
+          if (inputPoints > maxPoints) {
+            this.value = maxPoints; // ถ้ากรอกเกิน ให้ตั้งค่ากลับไปที่ maxPoints
+          } else if (inputPoints < 0) {
+            this.value = 0; // ถ้ากรอกน้อยกว่า 0 ให้ตั้งค่ากลับไปที่ 0
+          }
+        });
+
+      // ปิดโมดาลเมื่อคลิกนอกโมดาล
+      window.onclick = function (event) {
+        const modal = document.getElementById("creditModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      let isSubmitted = false; // เริ่มต้นเป็น false เพื่อระบุว่ายังไม่ได้ส่งงาน
+
+      // ฟังก์ชันสำหรับการส่งงาน
+      async function submitAssignment(fileList) {
+        if (assignmentId && email) {
+          const submissionQuery = db
+            .collection("Submissions")
+            .where("assignmentId", "==", assignmentId)
+            .where("submittedBy", "==", email); // กรองด้วยอีเมลของผู้ใช้ปัจจุบัน
+
+          const querySnapshot = await submissionQuery.get();
+
+          if (!querySnapshot.empty) {
+            // อัปเดต Submission ที่มีอยู่
+            querySnapshot.forEach(async (doc) => {
+              const submissionRef = db.collection("Submissions").doc(doc.id); // ใช้ SubmissionId เดิม
+
+              await submissionRef.update({
+                files: fileList.length > 0 ? fileList : ["No files uploaded"],
+                submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isSubmitted: true, // อัปเดตสถานะเป็น true
+              });
+
+              console.log("Submission data has been updated.");
+              document.querySelector(".undo-btn").textContent = "Undo Turn in";
+              isSubmitted = true;
+
+              // บันทึกการแจ้งเตือนให้ครู
+              await sendNotificationToTeacher(
+                assignmentId,
+                email,
+                submissionRef.id
+              );
+            });
+          } else {
+            // ถ้าไม่มี submission เดิม ให้สร้างใหม่
+            const SubmissionRef = db.collection("Submissions").doc(); // สร้าง ID ใหม่
+            await SubmissionRef.set({
+              SubmissionId: SubmissionRef.id,
+              assignmentId: assignmentId,
+              submittedBy: email || "Unknown",
+              submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              files: fileList.length > 0 ? fileList : ["No files uploaded"],
+              isSubmitted: true,
+            });
+
+            console.log("Submission data has been saved.");
+            document.querySelector(".undo-btn").textContent = "Undo Turn in";
+            isSubmitted = true;
+
+            // ส่งแจ้งเตือนให้ครู
+            await sendNotificationToTeacher(
+              assignmentId,
+              email,
+              SubmissionRef.id
+            );
+          }
+        }
+      }
+
+      async function sendNotificationToTeacher(
+        assignmentId,
+        email,
+        SubmissionId
+      ) {
+        // ดึงข้อมูล assignment เพื่อนำมาใช้ในการแจ้งเตือน
+        const assignmentRef = db.collection("Assignments").doc(assignmentId);
+
+        const doc = await assignmentRef.get();
+        if (doc.exists) {
+          const assignmentData = doc.data();
+          const teacherEmail = assignmentData.createdBy || "Unknown"; // ใช้ createdBy เป็นผู้รับการแจ้งเตือน
+
+          // Query หาแจ้งเตือนที่มี SubmissionId และอีเมลของครู (To field)
+          const notificationQuery = db
+            .collection("Notifications")
+            .where("SubmissionId", "==", SubmissionId)
+            .where("To", "==", teacherEmail); // ตรวจสอบว่ามีการแจ้งเตือนอยู่แล้วหรือไม่
+
+          const querySnapshot = await notificationQuery.get();
+
+          if (!querySnapshot.empty) {
+            // ถ้ามีการแจ้งเตือนที่เกี่ยวข้องอยู่แล้ว ให้ทำการอัปเดต
+            querySnapshot.forEach(async (doc) => {
+              const notificationRef = db
+                .collection("Notifications")
+                .doc(doc.id);
+              await notificationRef.update({
+                CreatedAt: firebase.firestore.FieldValue.serverTimestamp(), // อัปเดตวันที่
+                Message: `${email} has turned in the Assignment again.`, // อัปเดตข้อความ
+                isRead: false, // กำหนดให้เป็นสถานะยังไม่ได้อ่าน
+              });
+              console.log("Update existing notifications.");
+              // รีเฟรชหน้าเว็บหลังจากสร้างการแจ้งเตือนใหม่สำเร็จ
+              location.reload();
+            });
+          } else {
+            // ถ้าไม่มีการแจ้งเตือน ให้สร้างการแจ้งเตือนใหม่
+            const notificationRef = db.collection("Notifications").doc(); // สร้าง ID ใหม่
+            await notificationRef.set({
+              To: teacherEmail, // แจ้งเตือนคนที่สั่งงาน
+              Message: `${email} has turned in the Assignment again.`,
+              CreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              Type: "Submission",
+              SubmissionId: SubmissionId, // เก็บค่า SubmissionId สำหรับแจ้งเตือน
+              isRead: false, // กำหนดให้เป็นสถานะยังไม่ได้อ่าน
+            });
+            console.log("Create a new alert.");
+            // รีเฟรชหน้าเว็บหลังจากสร้างการแจ้งเตือนใหม่สำเร็จ
+            location.reload();
+          }
+        } else {
+          console.error("No assignment data found.");
+        }
+      }
+      async function undoSubmission() {
+        if (assignmentId && email) {
+          const submissionQuery = db
+            .collection("Submissions")
+            .where("assignmentId", "==", assignmentId)
+            .where("submittedBy", "==", email);
+
+          const querySnapshot = await submissionQuery.get();
+
+          if (!querySnapshot.empty) {
+            // ถ้ามีการส่งงานอยู่ ให้ทำการยกเลิก
+            querySnapshot.forEach(async (doc) => {
+              const submissionRef = db.collection("Submissions").doc(doc.id);
+
+              await submissionRef.update({
+                isSubmitted: false, // อัปเดตสถานะการส่งงานเป็น false
+              });
+
+              console.log("The submission has been successfully canceled.");
+              document.querySelector(".undo-btn").textContent = "Turn in";
+              isSubmitted = false;
+            });
+          } else {
+            console.error("ไม่พบการส่งงานเพื่อยกเลิก.");
+          }
+        } else {
+          console.error("ไม่พบ assignmentId หรือ email.");
+        }
+      }
+
+      // เมื่อหน้าเว็บโหลดเสร็จ
+      document.addEventListener("DOMContentLoaded", function () {
+        const emailFromUrl = urlParams.get("email"); // อีเมลของผู้ใช้จาก URL
+
+        if (assignmentId) {
+          const submissionQuery = db
+            .collection("Submissions")
+            .where("assignmentId", "==", assignmentId)
+            .where("submittedBy", "==", emailFromUrl) // ตรวจสอบอีเมลของผู้ใช้ตรงกัน
+            .limit(1);
+
+          submissionQuery
+            .get()
+            .then((querySnapshot) => {
+              if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                  const submissionData = doc.data();
+
+                  // ตรวจสอบสถานะการส่งงาน
+                  if (submissionData.isSubmitted) {
+                    document.querySelector(".undo-btn").textContent =
+                      "Undo Turn in";
+                    isSubmitted = true;
+                  } else {
+                    document.querySelector(".undo-btn").textContent = "Turn in";
+                    isSubmitted = false;
+                  }
+
+                  // แสดงไฟล์ที่แนบ
+                  if (submissionData.files && submissionData.files.length > 0) {
+                    displayFiles(submissionData.files);
+                  }
+                });
+              } else {
+                console.log("No submissions found for this user.");
+                resetPage(); // ถ้าไม่พบการส่งงานของผู้ใช้คนนี้
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching submissions: ", error);
+            });
+        }
+      });
+
+      // ฟังก์ชันสำหรับโหลดไฟล์จาก Firebase และแสดงบนหน้าเว็บ
+      async function loadSubmissionFiles(submissionId) {
+        if (submissionId) {
+          try {
+            const submissionDoc = await db
+              .collection("Submissions")
+              .doc(submissionId)
+              .get();
+
+            if (submissionDoc.exists) {
+              const submissionData = submissionDoc.data();
+              const fileList = submissionData.files || [];
+
+              // ถ้ามีไฟล์แนบ ให้แสดงไฟล์
+              if (fileList.length > 0) {
+                displayFiles(fileList);
+              } else {
+                console.log("No files found in this submission.");
+              }
+            } else {
+              console.error("No matching submission document found.");
+            }
+          } catch (error) {
+            console.error("Error fetching submission data:", error);
+          }
+        } else {
+          console.error("SubmissionId not found.");
+        }
+      }
+
+      // ฟังก์ชันสำหรับการแสดงไฟล์ทุกประเภทที่ถูกอัปโหลด
+      function displayFiles(files) {
+        const fileListElement = document.getElementById("file-list");
+        fileListElement.innerHTML = ""; // ล้างรายการไฟล์เก่า
+
+        files.forEach((fileUrl) => {
+          const fileElement = document.createElement("a");
+          fileElement.href = fileUrl;
+          fileElement.target = "_blank"; // เปิดไฟล์ในแท็บใหม่
+          fileElement.textContent = getFileName(fileUrl); // ดึงชื่อไฟล์จาก URL
+          fileElement.style.color = "#fff";
+          fileElement.style.display = "block"; // แสดงไฟล์แต่ละไฟล์ในบรรทัดใหม่
+
+          // จำกัดความยาวของชื่อไฟล์เพื่อไม่ให้ล้นออกนอกกล่อง
+          fileElement.style.maxWidth = "300px";
+          fileElement.style.whiteSpace = "nowrap";
+          fileElement.style.overflow = "hidden";
+          fileElement.style.textOverflow = "ellipsis";
+
+          // เพิ่มตัวจัดการเหตุการณ์เมื่อคลิกที่ไฟล์ เพื่อเปิดไฟล์ในแท็บใหม่
+          fileElement.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.open(fileUrl, "_blank");
+          });
+
+          fileListElement.appendChild(fileElement); // เพิ่มไฟล์ที่แสดงในรายการ
+        });
+      }
+
+      // ฟังก์ชันช่วยดึงชื่อไฟล์จาก URL
+      function getFileName(fileUrl) {
+        return decodeURIComponent(
+          fileUrl.substring(fileUrl.lastIndexOf("/") + 1)
+        );
+      }
+
+      // เมื่อหน้าเว็บโหลดสำเร็จ ให้เรียกฟังก์ชันเพื่อแสดงไฟล์ที่อัปโหลด
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = urlParams.get("SubmissionId"); // ดึง SubmissionId จาก URL
+
+        if (submissionId) {
+          loadSubmissionFiles(submissionId); // เรียกฟังก์ชันสำหรับโหลดและแสดงไฟล์ที่แนบ
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        // ตรวจสอบพารามิเตอร์ assignmentId, email และ submissionId จาก URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const assignmentId = urlParams.get("assignmentId");
+        const email = urlParams.get("email");
+        const submissionIdFromUrl = urlParams.get("SubmissionId"); // ดึง SubmissionId จาก URL
+
+        // แสดง points เริ่มต้น
+        if (assignmentId) {
+          const scoreElement = document.querySelector(".right-section p");
+          scoreElement.textContent = "No points"; // แสดง points เริ่มต้น
+        }
+
+        // ตรวจสอบ SubmissionId ใน URL ถ้ามีให้ใช้ SubmissionId นี้ในการตรวจสอบ
+        if (submissionIdFromUrl) {
+          console.log("SubmissionId from URL:", submissionIdFromUrl);
+
+          try {
+            // ค้นหา Submission จาก SubmissionId
+            const submissionRef = db
+              .collection("Submissions")
+              .doc(submissionIdFromUrl);
+            const submissionDoc = await submissionRef.get();
+
+            if (submissionDoc.exists) {
+              const submissionData = submissionDoc.data();
+              const assignmentId = submissionData.assignmentId; // ดึง AssignmentId จากข้อมูล Submission
+              console.log("AssignmentId from Submission:", assignmentId);
+
+              // ตรวจสอบ Score โดยใช้ SubmissionId
+              const scoreQuery = await db
+                .collection("Score")
+                .where("SubmissionId", "==", submissionIdFromUrl)
+                .limit(1)
+                .get();
+
+              if (!scoreQuery.empty) {
+                const scoreDoc = scoreQuery.docs[0];
+                const scoreData = scoreDoc.data();
+                console.log("Score data found:", scoreData);
+
+                // แสดงคะแนนที่ได้
+                const scoreElement = document.querySelector(".right-section p");
+                scoreElement.textContent = `Points : ${scoreData.ScoreObtained}/${scoreData.points}`;
+              } else {
+                console.log(
+                  "No matching score document found for SubmissionId:",
+                  submissionIdFromUrl
+                );
+
+                // ถ้าไม่มีข้อมูล Score ให้ดึงข้อมูลจาก Assignment แทน
+                if (assignmentId) {
+                  const assignmentRef = db
+                    .collection("Assignments")
+                    .doc(assignmentId);
+                  const assignmentDoc = await assignmentRef.get();
+
+                  if (assignmentDoc.exists) {
+                    const assignmentData = assignmentDoc.data();
+                    console.log("Assignment data found:", assignmentData);
+
+                    // แสดงคะแนนจาก Assignment
+                    const scoreElement =
+                      document.querySelector(".right-section p");
+                    scoreElement.textContent = `Points : ${assignmentData.points}`;
+                  } else {
+                    console.log(
+                      "No matching assignment document found for AssignmentId:",
+                      assignmentId
+                    );
+                  }
+                }
+              }
+            } else {
+              console.log(
+                "No matching submission document found for SubmissionId:",
+                submissionIdFromUrl
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching submission or score data:", error);
+          }
+        } else if (email && assignmentId) {
+          // ตรวจสอบ email ใน collection Submissions
+          try {
+            const submissionsQuery = await db
+              .collection("Submissions")
+              .where("assignmentId", "==", assignmentId)
+              .where("submittedBy", "==", email)
+              .limit(1) // จำกัดให้ดึงเฉพาะรายการแรก
+              .get();
+
+            if (!submissionsQuery.empty) {
+              // ถ้ามีเอกสารที่ตรงกัน ให้ดึง SubmissionId จากเอกสารนั้น
+              const submissionDoc = submissionsQuery.docs[0];
+              const submissionId = submissionDoc.id;
+
+              console.log("SubmissionId found:", submissionId);
+
+              // ตรวจสอบ SubmissionId ใน collection Score
+              const scoreQuery = await db
+                .collection("Score")
+                .where("SubmissionId", "==", submissionId)
+                .limit(1) // จำกัดให้ดึงเฉพาะรายการแรก
+                .get();
+
+              if (!scoreQuery.empty) {
+                // ถ้ามีเอกสารที่ตรงกัน ให้ดึงข้อมูลจากเอกสารนั้น
+                const scoreDoc = scoreQuery.docs[0];
+                const scoreData = scoreDoc.data();
+
+                console.log("Score data found:", scoreData);
+
+                // แสดงคะแนนในรูปแบบ คะแนนที่ได้/คะแนนเต็ม
+                const scoreElement = document.querySelector(".right-section p");
+                scoreElement.textContent = `Points : ${scoreData.ScoreObtained}/${scoreData.points}`;
+              } else {
+                console.log(
+                  "No matching score document found for SubmissionId:",
+                  submissionId
+                );
+
+                // ถ้าไม่มีข้อมูลใน Score ให้ดึงข้อมูลจาก Assignments มาแสดงแทน
+                const assignmentRef = await db
+                  .collection("Assignments")
+                  .doc(assignmentId)
+                  .get();
+                if (assignmentRef.exists) {
+                  const assignmentData = assignmentRef.data();
+                  console.log("Assignment data found:", assignmentData);
+
+                  // แสดงคะแนนจาก Assignments
+                  const scoreElement =
+                    document.querySelector(".right-section p");
+                  scoreElement.textContent = `Points : ${assignmentData.points}`;
+                } else {
+                  console.log(
+                    "No matching assignment document found for assignmentId:",
+                    assignmentId
+                  );
+                }
+              }
+            } else {
+              console.log("No matching submission found for email:", email);
+
+              // ถ้าไม่พบ email ใน Submissions ให้ดึงข้อมูลจาก Assignments มาแสดงแทน
+              const assignmentRef = await db
+                .collection("Assignments")
+                .doc(assignmentId)
+                .get();
+              if (assignmentRef.exists) {
+                const assignmentData = assignmentRef.data();
+                console.log("Assignment data found:", assignmentData);
+
+                // แสดงคะแนนจาก Assignments
+                const scoreElement = document.querySelector(".right-section p");
+                scoreElement.textContent = `Points : ${assignmentData.points}`;
+              } else {
+                console.log(
+                  "No matching assignment document found for assignmentId:",
+                  assignmentId
+                );
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching submissions or score:", error);
+          }
+        }
+      });
+
+      function uploadFile(file, assignmentId) {
+        const storageRef = firebase
+          .storage()
+          .ref(`SubmitAssignment/${file.name}`);
+        const uploadTask = storageRef.put(file);
+
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // ดำเนินการในขณะที่ไฟล์กำลังอัพโหลด
+          },
+          (error) => {
+            console.error("Error uploading file:", error);
+          },
+          () => {
+            // อัพโหลดสำเร็จ
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+              console.log("File available at", downloadURL);
+
+              // บันทึก URL ไฟล์ลงใน Firestore
+              db.collection("Submissions")
+                .doc(assignmentId)
+                .update({
+                  files: firebase.firestore.FieldValue.arrayUnion(downloadURL),
+                })
+                .then(() => {
+                  console.log("File URL successfully updated in Firestore!");
+                })
+                .catch((error) => {
+                  console.error("Error updating file URL:", error);
+                });
+            });
+          }
+        );
+      }
+
+      // เรียกฟังก์ชันเมื่อหน้าเว็บโหลด
+      document.addEventListener("DOMContentLoaded", function () {
+        const assignmentId = urlParams.get("assignmentId"); // ดึง assignmentId จาก URL
+        if (assignmentId) {
+          const submissionQuery = db
+            .collection("Submissions")
+            .where("assignmentId", "==", assignmentId)
+            .where("submittedBy", "==", email);
+
+          submissionQuery
+            .get()
+            .then((querySnapshot) => {
+              if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                  const submissionData = doc.data();
+
+                  // เรียกฟังก์ชันแสดงไฟล์
+                  if (submissionData.files && submissionData.files.length > 0) {
+                    displayFiles(submissionData.files);
+                  }
+                });
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching submissions:", error);
+            });
+        }
+      });
+
+      function resetPage() {
+        document.getElementById("file-list").innerHTML = ""; // ซ่อนการแสดงไฟล์
+      }
+
+      // จัดการการคลิกปุ่ม Turn in / Undo Turn in / Give credit mark
+      document
+        .querySelector(".undo-btn")
+        .addEventListener("click", async function () {
+          const buttonLabel = this.textContent.trim(); // ตรวจสอบข้อความของปุ่มปัจจุบัน
+          const files = document.getElementById("file-upload").files;
+          const fileList = [];
+
+          if (buttonLabel === "Give credit mark") {
+            console.log("Submitting Score...");
+            // แสดงหน้าต่างกรอกคะแนน
+            document.getElementById("creditModal").style.display = "block";
+
+            // โค้ดที่เกี่ยวข้องกับการให้คะแนน
+            const scoreObtained = parseFloat(
+              document.querySelector("#creditInput").value
+            );
+            const maxPoints = 5; // หรือดึงจากฐานข้อมูล Firestore
+            if (scoreObtained <= maxPoints && scoreObtained >= 0) {
+              // บันทึกคะแนน
+              saveOrUpdateScore(
+                assignmentId,
+                submissionId,
+                scorerEmail,
+                maxPoints,
+                scoreObtained
+              );
+            }
+          } else if (buttonLabel === "Turn in") {
+            // ถ้าเป็นการส่งงาน
+            console.log("Submitting assignment...");
+
+            // อัปโหลดไฟล์แต่ละไฟล์ไปที่ Firebase Storage
+            const storageRef = firebase.storage().ref();
+            for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+              const uploadTask = storageRef
+                .child("SubmitAssignment/" + file.name)
+                .put(file);
+
+              uploadTask.on(
+                "state_changed",
+                function (snapshot) {
+                  // ความคืบหน้าการอัปโหลด
+                },
+                function (error) {
+                  console.error("Error uploading file:", error);
+                },
+                function () {
+                  // เมื่ออัปโหลดเสร็จสิ้น
+                  uploadTask.snapshot.ref
+                    .getDownloadURL()
+                    .then(function (downloadURL) {
+                      console.log("File available at", downloadURL); // แสดง URL ในคอนโซล
+
+                      // บันทึก URL ของไฟล์ใน fileList
+                      fileList.push(downloadURL);
+
+                      // เมื่ออัปโหลดเสร็จสิ้นทั้งหมด ให้เรียกฟังก์ชัน submitAssignment เพื่อบันทึกข้อมูล
+                      if (fileList.length === files.length) {
+                        submitAssignment(fileList);
+                      }
+                    });
+                }
+              );
+            }
+          } else if (buttonLabel === "Undo Turn in") {
+            // ถ้าได้ส่งงานแล้ว ให้ Undo
+            console.log("Undoing submission...");
+            await undoSubmission(); // เรียกฟังก์ชัน undo
+          }
+        });
+
+      // ฟังก์ชันสำหรับปิดหน้าต่างกรอกคะแนน
+      window.onclick = function (event) {
+        const modal = document.getElementById("creditModal");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      document
+        .getElementById("file-upload")
+        .addEventListener("change", function (event) {
+          const fileList = event.target.files;
+          const fileDisplay = document.getElementById("file-list");
+          fileDisplay.innerHTML = ""; // ล้างไฟล์ก่อนหน้า
+
+          // สร้างอ้างอิง Firebase Storage
+          const storageRef = firebase.storage().ref();
+
+          for (let i = 0; i < fileList.length; i++) {
+            const file = fileList[i];
+            const fileItem = document.createElement("div");
+            fileItem.classList.add("file-item");
+
+            const fileIcon = document.createElement("i");
+            fileIcon.classList.add("fas", "fa-file");
+
+            const fileNameElement = document.createElement("span");
+            fileNameElement.textContent = file.name;
+
+            fileItem.appendChild(fileIcon);
+            fileItem.appendChild(fileNameElement);
+            fileDisplay.appendChild(fileItem);
+
+            // อัปโหลดไฟล์ไปที่ Firebase Storage
+            const uploadTask = storageRef
+              .child("uploads/" + file.name)
+              .put(file);
+
+            uploadTask.on(
+              "state_changed",
+              function (snapshot) {
+                // ความคืบหน้าการอัปโหลด (ถ้าต้องการแสดง)
+              },
+              function (error) {
+                console.error("Error uploading file:", error);
+              },
+              function () {
+                // เมื่ออัปโหลดเสร็จสิ้น
+                uploadTask.snapshot.ref
+                  .getDownloadURL()
+                  .then(function (downloadURL) {
+                    console.log("File available at", downloadURL); // แสดง URL ในคอนโซล
+                  });
+              }
+            );
+          }
+        });
+
+      // ฟังก์ชันสำหรับติดตามการอัปเดตคะแนนแบบเรียลไทม์
+      function listenForScoreUpdates(submissionId) {
+        if (submissionId) {
+          const scoreRef = db
+            .collection("Score")
+            .where("SubmissionId", "==", submissionId);
+
+          scoreRef.onSnapshot((querySnapshot) => {
+            if (!querySnapshot.empty) {
+              querySnapshot.forEach((doc) => {
+                const scoreData = doc.data();
+                console.log("Score data updated:", scoreData);
+
+                // อัปเดตคะแนนที่แสดงบนหน้าเว็บเมื่อคะแนนเปลี่ยนแปลงแบบเรียลไทม์
+                const scoreElement = document.querySelector(".right-section p");
+                scoreElement.textContent = `Points : ${scoreData.ScoreObtained}/${scoreData.points}`;
+              });
+            } else {
+              console.log("No saved score found for this submission.");
+              const scoreElement = document.querySelector(".right-section p");
+              scoreElement.textContent = "No points";
+            }
+          });
+        } else {
+          console.error("SubmissionId is not provided.");
+        }
+      }
+
+      // เมื่อหน้าเว็บโหลด ให้เริ่มติดตามการอัปเดตคะแนนแบบเรียลไทม์
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const submissionId = urlParams.get("SubmissionId"); // ดึง SubmissionId จาก URL
+
+        if (submissionId) {
+          listenForScoreUpdates(submissionId); // เริ่มติดตามการอัปเดตคะแนนแบบเรียลไทม์
+        }
+      });
+    </script>
+  </body>
+</html>

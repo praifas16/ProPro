@@ -165,19 +165,6 @@
         background-color: #2f2f2f;
       }
 
-      .notification-image-container {
-        display: block;
-        margin-top: 20px;
-        width: 100%;
-        text-align: center;
-      }
-      .notification-image-container img {
-        max-width: 300px;
-        max-height: 300px;
-        border-radius: 5px;
-        display: inline-block;
-      }
-
       .notification-list {
         width: 300px;
         padding: 20px;
@@ -187,35 +174,88 @@
 
       .notification-details {
         flex-grow: 1;
+        width: 65%;
         padding: 20px;
+        background-color: #333;
+        color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+        font-size: 18px;
+        margin: 10px;
+        height: fit-content;
+        overflow-y: visible;
+        display: none;
+        /* ซ่อนกล่องไว้ตอนแรก */
+      }
+
+      .view-details-btn {
+        background-color: #626362;
         color: white;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        padding: 5px 10px;
+        border: 2px solid rgb(121, 121, 121);
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 15px;
+      }
+
+      .view-details-btn:hover {
+        background-color: #555555;
+        border-color: #6b6b6b;
+      }
+
+      .view-details-btn:hover {
+        background-color: #404040;
+        /* เปลี่ยนสีเมื่อ hover */
+      }
+
+      .notification-header {
+        background-color: #444;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        margin: 10px;
+        margin-left: 0;
+        padding: 15px;
+      }
+
+      .notification-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+      }
+
+      .due-date {
+        font-size: 16px;
+        margin-top: 20;
+        /* ขนาดฟอนต์สำหรับ due date */
+        color: #aaa;
+        /* สีที่จางลงเพื่อเน้น title มากกว่า */
+        margin: 0;
+      }
+
+      .notification-body p {
+        display: inline;
+        /* ให้ข้อความและวันที่อยู่ในบรรทัดเดียวกัน */
+      }
+
+      .created-at {
+        font-size: 18px;
+        /* ปรับขนาดตัวอักษรให้เล็กลง */
+        color: #aaa;
+        /* เปลี่ยนสีเพื่อให้เด่นน้อยกว่าข้อความหลัก */
+        margin-left: 10px;
+        /* ระยะห่างจากข้อความหลัก */
       }
 
       .notification-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         background-color: #444;
         padding: 15px;
         margin-bottom: 10px;
         border-radius: 5px;
         cursor: pointer;
-      }
-
-      .notification-item p {
-        flex-grow: 1;
-        margin: 0;
-      }
-
-      .notification-item img {
-        max-width: 80px;
-        border-radius: 5px;
-        margin-left: 15px;
-        float: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .notification-item.unread {
@@ -235,15 +275,6 @@
       .notification-item .timestamp {
         font-size: 12px;
         color: #aaa;
-      }
-
-      .notification-item img {
-        max-width: 100px;
-        transition: transform 0.3s ease;
-      }
-
-      .notification-item:hover img {
-        transform: scale(1.1);
       }
 
       .no-notifications {
@@ -336,8 +367,8 @@
           <i class="fas fa-user-circle"></i>
         </div>
         <div class="dropdown-menu" id="dropdownMenu">
-          <a href="#">Profile</a>
-          <a href="#">Log out</a>
+          <a href="#" id="logoutLink">Log out</a>
+          <script src="logout.js"></script>
         </div>
       </div>
     </div>
@@ -366,30 +397,20 @@
     <!-- Notification Content -->
     <div class="notification-container">
       <div class="notification-list" id="notificationList">
-        <!-- List of notifications will be appended here -->
-      </div>
-      <div class="notification-details" id="notificationDetails">
-        <h2>รายละเอียดการแจ้งเตือน</h2>
         <div class="no-notifications" id="noNotifications">
           ไม่มีการแจ้งเตือน
         </div>
-        <div
-          class="notification-image-container"
-          id="notificationImageContainer"
-        >
-          <!-- แสดงภาพเมื่อมีการเรียก -->
-          <img
-            id="notificationImage"
-            src=""
-            alt="รูปภาพการแจ้งเตือน"
-            style="display: none; max-width: 100%"
-          />
-        </div>
-        <!-- ปิด div ของ notification-image-container -->
       </div>
-      <!-- ปิด div ของ notification-details -->
+      <div class="notification-details" id="notificationDetails">
+        <div class="notification-header">
+          <h2 class="notification-title"></h2>
+          <p class="due-date">Loading...</p>
+        </div>
+        <div class="notification-body">
+          <p><span class="created-at"></span></p>
+        </div>
+      </div>
     </div>
-    <!-- ปิด div ของ notification-container -->
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -411,7 +432,33 @@
       firebase.initializeApp(firebaseConfig);
       var db = firebase.firestore();
 
+      // ดึงพารามิเตอร์จาก URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get("email");
+
+      // ตรวจสอบและแสดงอีเมลที่มุมขวาบน
+      if (email) {
+        document.getElementById("user-email").textContent = email;
+
+        // อัปเดตลิงก์ใน Sidebar ด้วยอีเมล
+        document.querySelectorAll(".menu-items a").forEach((link) => {
+          const url = new URL(link.href);
+          url.searchParams.set("email", email);
+          link.href = url.toString();
+        });
+      }
+
       // Load email from URL and set to user-email element
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const assignmentId = urlParams.get("assignmentId");
+        const email = urlParams.get("email");
+
+        console.log("Assignment ID:", assignmentId);
+        console.log("Email:", email);
+
+        // ทำงานตาม AssignmentID และ email ที่ได้รับ
+      });
 
       // Function to search email or username in both Teacher and Student collections
       document
@@ -479,6 +526,7 @@
           });
       }
 
+      // Function to load notifications with real-time updates using onSnapshot
       function loadNotifications() {
         const notificationList = document.getElementById("notificationList");
         const noNotifications = document.getElementById("noNotifications");
@@ -486,17 +534,20 @@
         const email = new URLSearchParams(window.location.search).get("email");
 
         db.collection("Notifications")
-          .where("To", "==", email)
-          .orderBy("CreatedAt", "desc")
+          .where("To", "==", email) // กรองการแจ้งเตือนตามอีเมลผู้ใช้
+          .orderBy("CreatedAt", "desc") // เรียงลำดับตามเวลาที่สร้าง
           .onSnapshot(
             (snapshot) => {
-              notificationList.innerHTML = ""; // ล้างรายการแจ้งเตือนเดิม
+              console.log("Snapshot data:", snapshot.docs); // ตรวจสอบข้อมูลที่ถูกดึงมา
+              notificationList.innerHTML = ""; // เคลียร์ข้อมูลเก่าก่อน
               if (snapshot.empty) {
-                noNotifications.style.display = "block";
+                noNotifications.style.display = "block"; // แสดงว่าไม่มีการแจ้งเตือน
               } else {
-                noNotifications.style.display = "none";
+                noNotifications.style.display = "none"; // ซ่อนข้อความ "ไม่มีการแจ้งเตือน"
                 snapshot.forEach((doc) => {
                   const data = doc.data();
+                  console.log("Notification data:", data); // ตรวจสอบแต่ละการแจ้งเตือน
+
                   const notificationItem = document.createElement("div");
                   notificationItem.classList.add("notification-item");
                   notificationItem.classList.add(
@@ -516,41 +567,8 @@
                   notificationItem.appendChild(message);
                   notificationItem.appendChild(timestamp);
 
-                  // ตรวจสอบว่ามี PostID หรือไม่
-                  if (data.PostID) {
-                    // ดึงข้อมูลโพสต์จาก Firestore โดยใช้ PostID
-                    db.collection("Post")
-                      .doc(data.PostID)
-                      .get()
-                      .then((postDoc) => {
-                        if (postDoc.exists) {
-                          const postData = postDoc.data();
-                          console.log("Post data:", postData); // ตรวจสอบข้อมูลที่ได้จาก Firebase
-                          if (
-                            postData.PostType === "รูปภาพ" &&
-                            postData.Content
-                          ) {
-                            const img = document.createElement("img");
-                            img.src = postData.Content; // URL รูปภาพที่โพสต์
-                            img.style.maxWidth = "50px";
-                            img.style.borderRadius = "5px";
-                            img.style.marginLeft = "15px";
-                            notificationItem.appendChild(img); // แทรกรูปภาพทางขวาของข้อความ
-                          }
-                        } else {
-                          console.error(
-                            "Post not found for PostID:",
-                            data.PostID
-                          );
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("Error fetching post:", error);
-                      });
-                  }
-
                   notificationItem.addEventListener("click", function () {
-                    showNotificationDetails(data, doc.id);
+                    showNotificationDetails(data, doc.id); // เรียกฟังก์ชันแสดงรายละเอียดการแจ้งเตือน
                   });
 
                   notificationList.appendChild(notificationItem);
@@ -561,6 +579,241 @@
               console.error("Error loading notifications: ", error);
             }
           );
+      }
+
+      function goToAssignmentDetailAs(documentId) {
+        const email = new URLSearchParams(window.location.search).get("email");
+        window.location.href = `AssignmentDetail.html?assignmentId=${documentId}&email=${email}`;
+      }
+      function goToAssignmentDetail(scoreId, email) {
+        if (scoreId) {
+          // ค้นหาใน collection "Score" โดยใช้ ScoreId เพื่อดึง AssignmentId ที่เกี่ยวข้อง
+          db.collection("Score")
+            .doc(scoreId)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const scoreData = doc.data();
+                const assignmentId = scoreData.assignmentId; // ดึง assignmentId จาก Score
+
+                if (assignmentId) {
+                  // ถ้ามี assignmentId ส่งไปยังหน้า AssignmentDetail พร้อม email
+                  window.location.href = `AssignmentDetail.html?assignmentId=${assignmentId}&email=${email}`;
+                } else {
+                  console.error("Assignment ID not found in Score document.");
+                }
+              } else {
+                console.error("No matching Score document found.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching Score document:", error);
+            });
+        } else {
+          console.error("Score ID not found.");
+        }
+      }
+
+      // Load notifications when the page loads
+      window.onload = loadNotifications;
+
+      function showNotificationDetails(data, docId) {
+        const notificationDetails = document.getElementById(
+          "notificationDetails"
+        );
+        notificationDetails.style.display = "block"; // แสดงกล่องเมื่อคลิกที่รายการแจ้งเตือน
+
+        if (data && data.Type === "Submission") {
+          // ตรวจสอบว่ามี Type เป็น Submission หรือไม่
+          const email = new URLSearchParams(window.location.search).get(
+            "email"
+          );
+
+          // อัปเดตสถานะการแจ้งเตือนเป็นอ่านแล้วก่อนเปลี่ยนหน้า
+          db.collection("Notifications")
+            .doc(docId)
+            .update({
+              isRead: true, // เปลี่ยนสถานะการอ่าน
+            })
+            .then(() => {
+              // เมื่ออัปเดตสำเร็จแล้ว เปลี่ยนเส้นทางไปยังหน้า AssignmentDetail.html
+              window.location.href = `AssignmentDetail.html?SubmissionId=${data.SubmissionId}&email=${email}`;
+            })
+            .catch((error) => {
+              console.error("Error marking notification as read: ", error);
+              // เปลี่ยนหน้าแม้จะมีข้อผิดพลาดในการอัปเดต
+              window.location.href = `AssignmentDetail.html?SubmissionId=${data.SubmissionId}&email=${email}`;
+            });
+        }
+
+        if (data && data.Message) {
+          let title = data.Title || "No Title"; // แสดง Title ถ้ามี
+          let dueDate = data.dueDate ? data.dueDate : "No Due Date"; // ใช้ string ของ dueDate โดยตรง
+
+          // ตรวจสอบประเภทการแจ้งเตือน
+          if (data.Type === "Assignment") {
+            // แสดง Title และ dueDate สำหรับ Assignment
+            notificationDetails.innerHTML = `
+              <div class="notification-body">
+                <p>${data.Message} <span class="created-at">${new Date(
+              data.CreatedAt.seconds * 1000
+            ).toLocaleString("th-TH")} น.</span></p>
+              </div>
+              <div class="notification-header">
+                <h2 class="notification-title">${title}</h2>
+                <p class="due-date">Due Date : ${new Date(
+                  dueDate
+                ).toLocaleDateString("th-TH", {
+                  day: "numeric",
+                  month: "numeric",
+                  year: "numeric",
+                })}</p>
+                <button class="view-details-btn" onclick="goToAssignmentDetailAs('${
+                  data.AssignmentID
+                }')">
+                  ดูรายละเอียดงาน
+                </button>
+            `;
+          } else if (data.Type === "Score") {
+            // แสดงเฉพาะคะแนนสำหรับ Score
+            notificationDetails.innerHTML = `
+              <div class="notification-body">
+                <p>${data.Message} <span class="created-at">${new Date(
+              data.CreatedAt.seconds * 1000
+            ).toLocaleString("th-TH")} น.</span></p>
+              </div>
+              <div class="notification-header">
+                <h2 class="notification-title">Score</h2>
+                
+                <button class="view-details-btn" onclick="goToAssignmentDetail('${
+                  data.ScoreId
+                }', '${email}')">ดูรายละเอียดคะแนน</button>
+
+            `;
+          } else if (data && data.Type === "JoinRequest") {
+            // โหลด JoinRequest ตาม JoinRequestId ที่แจ้งเตือนมี
+            db.collection("JoinRequests")
+              .doc(data.JoinRequestId)
+              .get()
+              .then((joinDoc) => {
+                if (!joinDoc.exists) {
+                  console.error(
+                    "Join request document does not exist:",
+                    data.JoinRequestId
+                  );
+                  return;
+                }
+
+                const joinData = joinDoc.data();
+                const notificationButtons = document.querySelector(
+                  ".notification-buttons"
+                );
+
+                // ตรวจสอบสถานะของคำขอเข้าร่วม
+                if (joinData.Status === "Accepted") {
+                  notificationDetails.innerHTML = `
+                    <div class="notification-header">
+                        <h2 class="notification-title"> ${data.Message}</h2>
+                        <p class="created-at">${new Date(
+                          data.CreatedAt.seconds * 1000
+                        ).toLocaleString("th-TH")} น.</p>
+                    </div>
+                    <div class="notification-body">
+                        <p>You have approved the classroom join request.</p>
+                    </div>
+                  `;
+                  if (notificationButtons) {
+                    notificationButtons.classList.add("hidden");
+                  }
+                } else if (joinData.Status === "Refused") {
+                  notificationDetails.innerHTML = `
+                    <div class="notification-header">
+                        <h2 class="notification-title"> ${data.Message}</h2>
+                        <p class="created-at">${new Date(
+                          data.CreatedAt.seconds * 1000
+                        ).toLocaleString("th-TH")} น.</p>
+                    </div>
+                    <div class="notification-body">
+                        <p></p>
+                    </div>
+                  `;
+                  if (notificationButtons) {
+                    notificationButtons.classList.add("hidden");
+                  }
+                } else {
+                  // ถ้าสถานะยังไม่มี (pending) ให้แสดงปุ่ม
+                  notificationDetails.innerHTML = `
+                    <div class="notification-header">
+                        <h2 class="notification-title"> ${data.Message}</h2>
+                        <p class="created-at">${new Date(
+                          data.CreatedAt.seconds * 1000
+                        ).toLocaleString("th-TH")} น.</p>
+                    </div>
+                    <div class="notification-body">
+                        <p>Do you want to allow this user to join your classroom?</p>
+                        <div class="notification-buttons">
+                            <button class="accept" onclick="handleJoinRequest('${docId}', true)">Accept</button>
+                            <button class="refuse" onclick="handleJoinRequest('${docId}', false)">Refuse</button>
+                        </div>
+                    </div>
+                  `;
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching join request: ", error);
+              });
+          } else if (data && data.Type === "Post") {
+            // ถ้าเป็นประเภท Post
+            notificationDetails.innerHTML = `
+              <div class="notification-body">
+                <p>${data.Message} <span class="created-at">${new Date(
+              data.CreatedAt.seconds * 400
+            ).toLocaleString("th-TH")} น.</span></p>
+              </div>
+            `;
+
+            // ตรวจสอบว่ามีภาพหรือไม่
+            if (data.PostContent) {
+              notificationDetails.innerHTML += `
+                <div class="notification-image">
+                  <img src="${data.PostContent}" alt="Post Image" style="max-width: 40%; border-radius: 10px; margin-top: 10px;" />
+                </div>
+              `;
+            } else {
+              // แสดงการแจ้งเตือนทั่วไปที่ไม่ใช่ Assignment
+              notificationDetails.innerHTML = `
+                  <div class="notification-header">
+                      <h2 class="notification-title">รายละเอียดการแจ้งเตือน</h2>
+                      <div class="notification-body">
+                          <p>${Message}</p>
+                          <p class="created-at">${CreatedAt}</p>
+                      </div>
+                  </div>
+              `;
+            }
+          }
+
+          // การทำเครื่องหมายว่าอ่านแล้ว
+          db.collection("Notifications")
+            .doc(docId)
+            .update({
+              isRead: true,
+            })
+            .then(() => {
+              const notificationItem = document.querySelector(
+                `.notification-item[data-id='${docId}']`
+              );
+              if (notificationItem) {
+                notificationItem.classList.remove("unread");
+                notificationItem.classList.add("read");
+              }
+            })
+            .catch((error) => {
+              console.error("Error marking notification as read: ", error);
+            });
+        } else {
+          window.location.href = `AssignmentDetail.html?assignmentId=${data.AssignmentID}`;
+        }
       }
 
       function handleJoinRequest(notificationId, isAccepted) {
@@ -613,62 +866,23 @@
                             ),
                         })
                         .then(() => {
-                          // ตรวจสอบการแจ้งเตือนที่ซ้ำกันก่อนเพิ่ม
+                          // บันทึกการแจ้งเตือนว่าผู้ใช้ได้เข้าร่วมห้องเรียนแล้ว
                           db.collection("Notifications")
-                            .where("To", "==", requesterEmail)
-                            .where("Type", "==", "Info")
-                            .where(
-                              "Message",
-                              "==",
-                              `ยินดีด้วย!!คุณได้รับอนุญาตให้เข้าร่วมห้องเรียนแล้วจาก ${ownerEmail} 🎊🎉🎀`
-                            )
-                            .get()
-                            .then((querySnapshot) => {
-                              if (querySnapshot.empty) {
-                                db.collection("Notifications")
-                                  .add({
-                                    To: requesterEmail,
-                                    Message: `ได้รับอนุญาตจาก ${ownerEmail} 🎊🎉🎀`,
-                                    CreatedAt:
-                                      firebase.firestore.FieldValue.serverTimestamp(),
-                                    Type: "Info",
-                                    isRead: false,
-                                  })
-                                  .then(() => {
-                                    alert(
-                                      "Join request accepted and the user has been added to the classroom."
-                                    );
-                                    document.getElementById(
-                                      "notificationDetails"
-                                    ).innerHTML += `
-                                      <p>คุณได้อนุญาตให้ ${requesterEmail} เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</p>
-                                    `;
-                                    const buttonsContainer =
-                                      document.querySelector(
-                                        ".notification-buttons"
-                                      );
-                                    if (buttonsContainer) {
-                                      buttonsContainer.style.display = "none";
-                                    }
-                                  })
-                                  .catch((error) => {
-                                    console.error(
-                                      "Error adding notification to requester: ",
-                                      error
-                                    );
-                                    alert(
-                                      "An error occurred while notifying the requester. Please try again."
-                                    );
-                                  });
-                              } else {
-                                console.log(
-                                  "Notification already exists for this action."
-                                );
-                              }
+                            .add({
+                              To: requesterEmail,
+                              Message: `${ownerEmail} has accepted your join request. You have been accepted into the classroom.`,
+                              CreatedAt:
+                                firebase.firestore.FieldValue.serverTimestamp(),
+                              Type: "Joined",
+                              JoinRequestId: joinRequestId,
+                              isRead: false,
+                            })
+                            .then(() => {
+                              location.reload(); // รีเฟรชหน้าเว็บหลังจากตอบรับเสร็จ
                             })
                             .catch((error) => {
                               console.error(
-                                "Error checking existing notification: ",
+                                "Error adding notification for acceptance: ",
                                 error
                               );
                             });
@@ -678,36 +892,70 @@
                             "Error adding user to classroom: ",
                             error
                           );
-                          alert(
-                            "An error occurred while adding the user to the classroom. Please check the console for details."
-                          );
                         });
                     } else {
-                      // กรณีปฏิเสธ
+                      // ถ้าปฏิเสธ บันทึกการแจ้งเตือนว่าผู้ใช้ถูกปฏิเสธการเข้าร่วม
                       db.collection("Notifications")
                         .add({
                           To: requesterEmail,
-                          Message: `คุณถูกปฏิเสธจาก ${ownerEmail} !!🥺😔`,
+                          Message: `${ownerEmail} has denied your join request. You have been denied entry into the classroom.`,
                           CreatedAt:
                             firebase.firestore.FieldValue.serverTimestamp(),
-                          Type: "Info",
+                          Type: "JoinRequest",
+                          JoinRequestId: joinRequestId,
                           isRead: false,
                         })
                         .then(() => {
-                          alert(
-                            "Join request refused and notification sent to the requester."
-                          );
+                          location.reload(); // รีเฟรชหน้าเว็บหลังจากปฏิเสธเสร็จ
                         })
                         .catch((error) => {
                           console.error(
-                            "Error adding refusal notification: ",
+                            "Error adding notification for refusal: ",
                             error
-                          );
-                          alert(
-                            "An error occurred while notifying the requester. Please try again."
                           );
                         });
                     }
+
+                    // ตรวจสอบสถานะและซ่อนปุ่มเมื่อผู้ใช้ได้ตอบรับ/ปฏิเสธแล้ว
+                    db.collection("JoinRequests")
+                      .doc(joinRequestId)
+                      .get()
+                      .then((updatedJoinDoc) => {
+                        const updatedJoinData = updatedJoinDoc.data();
+                        if (updatedJoinData.Status === "Accepted") {
+                          const notificationButtons = document.querySelector(
+                            ".notification-buttons"
+                          );
+                          if (notificationButtons) {
+                            notificationButtons.classList.add("hidden");
+                          }
+                          const notificationDetails = document.getElementById(
+                            "notificationDetails"
+                          );
+                          notificationDetails.innerHTML += `
+                            <p>You have approved the classroom join request.</p>
+                          `;
+                        } else if (updatedJoinData.Status === "Refused") {
+                          const notificationButtons = document.querySelector(
+                            ".notification-buttons"
+                          );
+                          if (notificationButtons) {
+                            notificationButtons.classList.add("hidden");
+                          }
+                          const notificationDetails = document.getElementById(
+                            "notificationDetails"
+                          );
+                          notificationDetails.innerHTML += `
+                            <p>You have declined your classroom entry request.</p>
+                          `;
+                        }
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Error fetching updated join request: ",
+                          error
+                        );
+                      });
 
                     // ทำเครื่องหมายว่าแจ้งเตือนนี้ได้อ่านแล้ว
                     db.collection("Notifications")
@@ -724,14 +972,10 @@
                   })
                   .catch((error) => {
                     console.error("Error updating join request: ", error);
-                    alert(
-                      "An error occurred while processing the request. Please check the console for details."
-                    );
                   });
               })
               .catch((error) => {
                 console.error("Error fetching join request document: ", error);
-                alert("Error: Unable to fetch the join request document.");
               });
           })
           .catch((error) => {
@@ -739,188 +983,7 @@
           });
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
-        loadNotifications();
-
-        const email = new URLSearchParams(window.location.search).get("email");
-        if (email) {
-          document.getElementById("user-email").textContent = email;
-          document.querySelectorAll(".menu-items a").forEach((link) => {
-            const url = new URL(link.href);
-            url.searchParams.set("email", email);
-            link.href = url.toString();
-          });
-        }
-
-        // รอการโหลด DOM ให้เสร็จสมบูรณ์ก่อนตรวจสอบการมีอยู่ของ notificationImageContainer
-        setTimeout(() => {
-          const notificationImageContainer = document.getElementById(
-            "notificationImageContainer"
-          );
-          if (notificationImageContainer) {
-            console.log(
-              "Element 'notificationImageContainer' is found in DOM."
-            );
-          } else {
-            console.error(
-              "Element 'notificationImageContainer' not found in DOM."
-            );
-          }
-        }, 2000); // หน่วงเวลา 1000 มิลลิวินาที
-      });
-
-      window.onload = loadNotifications;
-      function showNotificationDetails(data, docId) {
-        const notificationDetails = document.getElementById(
-          "notificationDetails"
-        );
-        const notificationImageContainer = document.getElementById(
-          "notificationImageContainer"
-        );
-
-        if (notificationDetails) {
-          // แสดงข้อความการแจ้งเตือน
-          if (data && data.Message) {
-            notificationDetails.innerHTML = `
-                <h2>${data.Message}</h2>
-                <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
-                  "th-TH"
-                )}</p>
-            `;
-          } else {
-            notificationDetails.innerHTML = `<h2>ไม่มีข้อความที่จะแสดง</h2>`;
-          }
-        } else {
-          console.error("Element 'notificationDetails' not found in DOM");
-          return;
-        }
-
-        if (notificationImageContainer) {
-          // ตรวจสอบว่า data.PostContent มีค่าหรือไม่ก่อนที่จะทำงานกับรูปภาพ
-          if (data && data.PostContent) {
-            const img = document.createElement("img");
-            img.src = data.PostContent; // ใช้ URL ของรูปภาพที่ได้จาก Firebase
-            img.style.maxWidth = "300px"; // ตั้งค่าขนาดสูงสุดของรูปภาพ
-            img.style.borderRadius = "10px";
-            img.style.marginTop = "15px";
-            notificationImageContainer.innerHTML = ""; // ล้าง container ก่อนเพิ่มรูปภาพใหม่
-            notificationImageContainer.appendChild(img); // เพิ่มรูปภาพเข้าไปใน container
-            notificationImageContainer.style.display = "block"; // แสดง container รูปภาพ
-          } else {
-            // หากไม่มีรูปภาพซ่อน container รูปภาพ
-            notificationImageContainer.innerHTML = "";
-            notificationImageContainer.style.display = "none";
-          }
-        } else {
-          console.error(
-            "Element 'notificationImageContainer' not found in DOM"
-          );
-        }
-        console.log("PostContent:", data.PostContent);
-
-        // แสดงข้อมูล JoinRequest ถ้ามี
-        if (data.Type === "JoinRequest" && data.JoinRequestId) {
-          db.collection("JoinRequests")
-            .doc(data.JoinRequestId)
-            .get()
-            .then((joinDoc) => {
-              if (joinDoc.exists) {
-                const joinData = joinDoc.data();
-                const status = joinData.Status;
-
-                if (status === "Pending") {
-                  notificationDetails.innerHTML = `
-                            <h2>${data.Message}</h2>
-                            <p>${new Date(
-                              data.CreatedAt.seconds * 1000
-                            ).toLocaleString("th-TH")}</p>
-                            <p>มีการขอเข้าร่วมห้องเรียนจาก ${
-                              joinData.RequesterEmail
-                            } โปรดพิจารณา !! 😊</p>
-                        `;
-
-                  const buttonsContainer = document.createElement("div");
-                  buttonsContainer.classList.add("notification-buttons");
-
-                  const acceptButton = document.createElement("button");
-                  acceptButton.classList.add("accept");
-                  acceptButton.textContent = "Accept";
-                  acceptButton.onclick = function () {
-                    handleJoinRequest(docId, true);
-                    buttonsContainer.style.display = "none";
-                  };
-
-                  const refuseButton = document.createElement("button");
-                  refuseButton.classList.add("refuse");
-                  refuseButton.textContent = "Refuse";
-                  refuseButton.onclick = function () {
-                    handleJoinRequest(docId, false);
-                    buttonsContainer.style.display = "none";
-                  };
-
-                  buttonsContainer.appendChild(acceptButton);
-                  buttonsContainer.appendChild(refuseButton);
-                  notificationDetails.appendChild(buttonsContainer);
-                } else if (status === "Accepted") {
-                  notificationDetails.innerHTML = `
-                            <h2>คุณได้อนุญาตให้ ${
-                              joinData.RequesterEmail
-                            } เข้าร่วมห้องเรียนแล้ว!! 🎊🎀🎉</h2>
-                            <p>${new Date(
-                              data.CreatedAt.seconds * 1000
-                            ).toLocaleString("th-TH")}</p>
-                        `;
-                } else if (status === "Refused") {
-                  notificationDetails.innerHTML = `
-                            <h2>คุณได้ปฏิเสธ ${
-                              joinData.RequesterEmail
-                            } ในการขอเข้าร่วมห้องเรียน!! 😔</h2>
-                            <p>${new Date(
-                              data.CreatedAt.seconds * 1000
-                            ).toLocaleString("th-TH")}</p>
-                        `;
-                }
-              } else {
-                console.error(
-                  "JoinRequest not found with ID:",
-                  data.JoinRequestId
-                );
-                notificationDetails.innerHTML = `<h2>ไม่พบข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching JoinRequest:", error);
-              notificationDetails.innerHTML = `<h2>เกิดข้อผิดพลาดในการดึงข้อมูลการขอเข้าร่วมห้องเรียน</h2>`;
-            });
-        } else {
-          notificationDetails.innerHTML = `
-            <h2>${data.Message}</h2>
-            <p>${new Date(data.CreatedAt.seconds * 1000).toLocaleString(
-              "th-TH"
-            )}</p>
-        `;
-        }
-
-        // ทำเครื่องหมายว่าแจ้งเตือนนี้ได้อ่านแล้ว
-        db.collection("Notifications")
-          .doc(docId)
-          .update({
-            isRead: true,
-          })
-          .then(() => {
-            const notificationItem = document.querySelector(
-              `.notification-item[data-id='${docId}']`
-            );
-            if (notificationItem) {
-              notificationItem.classList.remove("unread");
-              notificationItem.classList.add("read");
-            }
-          })
-          .catch((error) => {
-            console.error("Error marking notification as read: ", error);
-          });
-      }
-
+      // Load notifications when the page loads
       window.onload = loadNotifications;
 
       // Toggle dropdown menu

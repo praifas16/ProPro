@@ -2,12 +2,14 @@ const path = require('path');
 const _filename = path.resolve(__filename);
 
 module.exports = {
-    transform: {
-      "^.+\\.jsx?$": "babel-jest",
-    },
-    testEnvironment: "jsdom",
-    moduleNameMapper: {
-      "\\.(css|less)$": "identity-obj-proxy",
-    },
-  };
-  
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: [
+    "docs/**/*.{js,jsx}",
+    "!**/node_modules/**"  
+],
+
+
+  testEnvironment: 'jsdom',
+};
+

@@ -1,0 +1,32 @@
+describe("1-1 1/10/2567 at 12:28:42", () => {
+  it("tests 1-1 1/10/2567 at 12:28:42", () => {
+    cy.viewport(852, 696);
+    cy.visit("https://team-1849c.web.app/index.html");
+    cy.get("#email").click();
+    cy.get("#email").type("pakonj66@gmail.com");
+    cy.get("#password").click();
+    cy.get("#password").type("1234");
+    cy.get("div.left-section button").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/studenthead.html?email=pakonj66%40gmail.com");
+    cy.get("div:nth-of-type(1) div.classroom-icon").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/general.html?classroom=%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1&email=pakonj66%40gmail.com");
+    cy.get("#documentId").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/general.html?classroom=%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1&email=pakonj66%40gmail.com#");
+    cy.get("div.content-header a").click();
+    cy.get("a:nth-of-type(1) > span").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/studenthead.html?email=pakonj66%40gmail.com&classroom=%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%97%E0%B8%B3%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B8%E0%B9%88%E0%B8%A1");
+    cy.get("#notificationMenu").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/Notifications.html?email=pakonj66%40gmail.com");
+    cy.get("div.read > p").click();
+    cy.get("#notificationList > div:nth-of-type(2) > p").click();
+    cy.get("div.unread > p").click();
+    cy.get("#notificationList > div:nth-of-type(1) > p").click();
+    cy.get("button").click();
+    cy.visit("https://team-1849c.web.app/Notifications.html?email=pakonj66%40gmail.com");
+    cy.get("div.sidebar a:nth-of-type(1)").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/studenthead.html?email=pakonj66%40gmail.com");
+    cy.get("div.user-section i").click();
+    cy.get("#logoutLink").click();
+    cy.location("href").should("eq", "https://team-1849c.web.app/index.html");
+  });
+});
